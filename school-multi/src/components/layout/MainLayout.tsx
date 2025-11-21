@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   LayoutDashboard,
@@ -21,7 +21,6 @@ interface NavItem {
 const MainLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { logout } = useAuth()
-  const navigate = useNavigate()
   const location = useLocation()
 
   const navItems: NavItem[] = [
@@ -47,6 +46,20 @@ const MainLayout: React.FC = () => {
       return location.pathname === '/'
     }
     return location.pathname.startsWith(path)
+  }
+
+  const handleLogout = async () => {
+    console.log('Logout handler called')
+    try {
+      await logout()
+      console.log('Logout completed successfully')
+      closeSidebarOnMobile()
+      // Force redirect to home
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Error during logout:', error)
+      alert('Logout failed. Please try again.')
+    }
   }
 
   return (
@@ -90,11 +103,7 @@ const MainLayout: React.FC = () => {
 
         <button
           className="sidebar__nav-item sidebar__nav-item--bottom"
-          onClick={async () => {
-            await logout()
-            closeSidebarOnMobile()
-            navigate('/')
-          }}
+          onClick={handleLogout}
           aria-label="Logout"
         >
           <span className="sidebar__nav-icon">

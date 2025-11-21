@@ -1,11 +1,15 @@
 import React from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useTenant } from '../contexts/TenantContext'
-import LoginActions from '../components/auth/LoginActions'
+import LandingPage from './LandingPage'
 
 const HomePage: React.FC = () => {
   const { user } = useAuth()
   const { tenant } = useTenant()
+
+  if (!user) {
+    return <LandingPage />
+  }
 
   const displayName = user?.user_metadata?.full_name || user?.email || 'Karla'
 
@@ -15,7 +19,7 @@ const HomePage: React.FC = () => {
         <div>
           <h1 className="dashboard__title">Greetings, {displayName}!</h1>
           <p className="dashboard__subtitle">
-            {tenant?.name || 'Your School'} • 7 May, 2023
+            {tenant?.name || 'Your School'} • {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
         <div className="dashboard__user">
@@ -28,15 +32,6 @@ const HomePage: React.FC = () => {
           <div className="dashboard__avatar" />
         </div>
       </header>
-
-      {!user && (
-        <div className="dashboard__login-banner">
-          <p>Login untuk mengakses dashboard lengkap orang tua.</p>
-          <div className="dashboard__login-actions">
-            <LoginActions />
-          </div>
-        </div>
-      )}
 
       <div className="dashboard__grid">
         {/* Left: main content */}

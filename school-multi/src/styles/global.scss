@@ -83,6 +83,7 @@ body {
 				align-items: center;
 				justify-content: center;
 				cursor: pointer;
+				text-decoration: none !important;
 				transition:
 					background 0.2s,
 					color 0.2s;
@@ -95,6 +96,11 @@ body {
 
 				&--bottom {
 					margin-top: auto;
+				}
+
+				>a,
+				a:link {
+					text-decoration: none !important;
 				}
 			}
 		}
@@ -1094,9 +1100,41 @@ body {
 
 		&__stats-row {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+
+			&__shapes {
+				position: absolute;
+				left: 50%;
+				top: 65%;
+				display: flex;
+				gap: 0.5rem;
+
+				.shape {
+					width: 36px;
+					height: 36px;
+
+					&--circle {
+						border-radius: 50%;
+						background: #fbbf24;
+					}
+
+					&--triangle {
+						width: 0;
+						height: 0;
+						border-left: 20px solid transparent;
+						border-right: 20px solid transparent;
+						border-bottom: 35px solid #10b981;
+					}
+
+					&--square {
+						background: #6366f1;
+						border-radius: 8px;
+					}
+				}
+			}
 		}
 	}
 }
 
 // Import tenant setup styles
-@import './tenant-setup.scss';
+@import 'tenant-setup.scss';
+@import 'landing-page.scss';

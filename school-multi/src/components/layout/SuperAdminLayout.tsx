@@ -7,6 +7,7 @@ const SuperAdminLayout: React.FC = () => {
 
   const handleLogout = async (): Promise<void> => {
     await logout()
+    window.location.href = '/'
   }
 
   return (
@@ -17,7 +18,7 @@ const SuperAdminLayout: React.FC = () => {
             <h1>Platform Management</h1>
             <span>Super Administrator</span>
           </div>
-          
+
           <nav className="admin-nav">
             <div className="user-info">
               <span>Welcome, {user?.user_metadata?.full_name || user?.email}</span>

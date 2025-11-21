@@ -203,12 +203,17 @@ $text-light: #9ca3af;
         &--bottom {
             margin-top: auto;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 20px;
+            // padding-top: 20px;
         }
 
         &:focus-visible {
             outline: 2px solid $primary;
             outline-offset: 2px;
+        }
+
+        >a,
+        a:link {
+            text-decoration: none !important;
         }
     }
 
@@ -228,6 +233,7 @@ $text-light: #9ca3af;
         opacity: 1;
         transition: opacity 0.2s ease;
         flex: 1;
+        text-decoration: none !important;
     }
 }
 
@@ -247,6 +253,7 @@ $text-light: #9ca3af;
 
         &__nav-label {
             font-size: 0.875rem;
+            text-decoration: none !important;
         }
     }
 }

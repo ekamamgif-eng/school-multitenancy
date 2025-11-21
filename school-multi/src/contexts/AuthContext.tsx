@@ -22,6 +22,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
+  // Define createUserProfile before it's used in useEffect
+  const createUserProfile = async (user: SupabaseUser): Promise<void> => {
+    try {
+      // Check if profile exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      // Ignore error if it's just "not found" (PGRST116) which means we need to create it
+      // But if it's a 404 (table not found), we should catch it
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.warn('Error checking profile (table might be missing):', fetchError)
+        return
+      }
+
+      if (!existingProfile) {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: user.id,
+              email: user.email,
+              name: user.user_metadata?.full_name || user.email,
+              avatar_url: user.user_metadata?.avatar_url,
+              created_at: new Date().toISOString()
+            }
+          ])
+
+        if (insertError) {
+          console.warn('Error creating profile:', insertError)
+        }
+      }
+    } catch (error) {
+      console.warn('Exception in createUserProfile (likely missing table):', error)
+    }
+  }
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(mapSupabaseUser(session?.user ?? null))
       setLoading(false)
-      
+
       // If signed in, create/update user profile
       if (session?.user && event === 'SIGNED_IN') {
         await createUserProfile(session.user)
@@ -44,28 +83,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => subscription.unsubscribe()
   }, [])
-
-  const createUserProfile = async (user: SupabaseUser): Promise<void> => {
-    const { data: existingProfile } = await supabase
-      .from('parent_profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single()
-
-    if (!existingProfile) {
-      await supabase
-        .from('parent_profiles')
-        .insert([
-          {
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.email,
-            avatar_url: user.user_metadata?.avatar_url,
-            created_at: new Date().toISOString()
-          }
-        ])
-    }
-  }
 
   const loginWithGoogle = async (): Promise<void> => {
     try {

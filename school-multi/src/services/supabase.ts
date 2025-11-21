@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
 // Database schema helper
 export const tables = {
   tenants: 'tenants',
-  parent_profiles: 'parent_profiles',
+  parent_profiles: 'profiles', // Updated to match standard Supabase 'profiles' table
   students: 'students',
   parent_student_binding: 'parent_student_binding',
   payment_submissions: 'payment_submissions',
