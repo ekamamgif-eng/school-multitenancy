@@ -8,6 +8,7 @@ import { TenantProvider } from './contexts/TenantContext.tsx'
 import './styles/global.scss'
 import './styles/enhanced-sidebar.scss'
 import './components/auth/LoginActions.scss'
+import './styles/pages.scss'
 
 const queryClient = new QueryClient()
 

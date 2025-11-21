@@ -168,9 +168,10 @@ $text-light: #9ca3af;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 3px;
+            right: 0;
             background-image: linear-gradient(to right, rgba(79, 70, 229, 0.4), rgba(56, 189, 248, 0.4));
-            transform: scaleY(0);
+            transform: scaleX(0);
+            transform-origin: left;
             transition: transform 0.2s ease;
             z-index: 0;
         }
@@ -181,7 +182,7 @@ $text-light: #9ca3af;
             transform: translateX(4px);
 
             &::before {
-                transform: scaleY(1);
+                transform: scaleX(1);
             }
         }
 
@@ -191,7 +192,7 @@ $text-light: #9ca3af;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
             &::before {
-                transform: scaleY(1);
+                transform: scaleX(1);
             }
 
             .sidebar__nav-label {

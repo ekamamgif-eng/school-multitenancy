@@ -9,6 +9,10 @@ import AuthLayout from './components/layout/AuthLayout'
 import SuperAdminLayout from './components/layout/SuperAdminLayout'
 // Page Components
 import HomePage from './pages/HomePage'
+import DocumentsPage from './pages/DocumentsPage'
+import CalendarPage from './pages/CalendarPage'
+import SettingsPage from './pages/SettingsPage'
+import NotificationsPage from './pages/NotificationsPage'
 import LoginPage from './pages/auth/LoginPage'
 import SuperAdminLogin from './pages/auth/SuperAdminLogin'
 import GoogleAuthCallback from './pages/auth/GoogleAuthCallback'
@@ -32,6 +36,10 @@ const App: React.FC = () => {
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="documents" element={<DocumentsPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
           <Route path="auth">
             <Route path="login" element={<LoginPage />} />
             <Route path="super-admin" element={<SuperAdminLogin />} />

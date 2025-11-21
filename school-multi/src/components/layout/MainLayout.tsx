@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   LayoutDashboard,
   FileText,
@@ -14,18 +15,21 @@ import {
 interface NavItem {
   icon: React.ReactNode
   label: string
-  active?: boolean
+  path: string
 }
 
 const MainLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const navItems: NavItem[] = [
-    { icon: <LayoutDashboard size={22} />, label: 'Dashboard', active: true },
-    { icon: <FileText size={22} />, label: 'Documents' },
-    { icon: <CalendarDays size={22} />, label: 'Calendar' },
-    { icon: <Settings size={22} />, label: 'Settings' },
-    { icon: <Bell size={22} />, label: 'Notifications' }
+    { icon: <LayoutDashboard size={22} />, label: 'Dashboard', path: '/' },
+    { icon: <FileText size={22} />, label: 'Documents', path: '/documents' },
+    { icon: <CalendarDays size={22} />, label: 'Calendar', path: '/calendar' },
+    { icon: <Settings size={22} />, label: 'Settings', path: '/settings' },
+    { icon: <Bell size={22} />, label: 'Notifications', path: '/notifications' }
   ]
 
   const toggleSidebar = () => {
@@ -36,6 +40,13 @@ const MainLayout: React.FC = () => {
     if (window.innerWidth < 1024) {
       setIsSidebarOpen(false)
     }
+  }
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/'
+    }
+    return location.pathname.startsWith(path)
   }
 
   return (
@@ -64,21 +75,26 @@ const MainLayout: React.FC = () => {
 
         <nav className="sidebar__nav">
           {navItems.map((item, index) => (
-            <button
+            <Link
               key={index}
-              className={`sidebar__nav-item ${item.active ? 'sidebar__nav-item--active' : ''}`}
+              to={item.path}
+              className={`sidebar__nav-item ${isActive(item.path) ? 'sidebar__nav-item--active' : ''}`}
               onClick={closeSidebarOnMobile}
               aria-label={item.label}
             >
               <span className="sidebar__nav-icon">{item.icon}</span>
               <span className="sidebar__nav-label">{item.label}</span>
-            </button>
+            </Link>
           ))}
         </nav>
 
         <button
           className="sidebar__nav-item sidebar__nav-item--bottom"
-          onClick={closeSidebarOnMobile}
+          onClick={async () => {
+            await logout()
+            closeSidebarOnMobile()
+            navigate('/')
+          }}
           aria-label="Logout"
         >
           <span className="sidebar__nav-icon">
