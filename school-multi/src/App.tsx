@@ -18,6 +18,7 @@ import TenantLogin from './pages/auth/TenantLogin'
 import SuperAdminLogin from './pages/auth/SuperAdminLogin'
 import GoogleAuthCallback from './pages/auth/GoogleAuthCallback'
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import ParentDashboard from './pages/parent/Dashboard'
 import PaymentUploadPage from './pages/parent/PaymentUploadPage'
 import StudentBindingPage from './pages/parent/StudentBindingPage'
@@ -52,38 +53,30 @@ const App: React.FC = () => {
     return <LoadingSpinner />
   }
 
-  // Allow access to public routes even if not logged in
-  const publicRoutes = [
-    '/auth/google-callback',
-    '/auth/login',
-    '/auth/tenant-login',
-    '/auth/super-admin',
-    '/auth/reset-password'
-  ]
-  const isPublicRoute = publicRoutes.some(route => location.pathname.startsWith(route))
-
-  if (!user && !isPublicRoute) {
-    return <LandingPage />
-  }
-
   return (
     <div className={`app tenant-${tenant?.id}`}>
       <Routes>
+        {/* Landing Page - Show when not logged in */}
+        {!user && <Route path="/" element={<LandingPage />} />}
+
         {/* Public Routes - Outside MainLayout */}
         <Route path="/auth/google-callback" element={<GoogleAuthCallback />} />
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/tenant-login" element={<TenantLogin />} />
         <Route path="/auth/super-admin" element={<SuperAdminLogin />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
 
         {/* Protected Routes - Inside MainLayout */}
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="documents" element={<DocumentsPage />} />
-          <Route path="calendar" element={<CalendarPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-        </Route>
+        {user && (
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="documents" element={<DocumentsPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+          </Route>
+        )}
 
         {/* SUPER ADMIN ROUTES */}
         {user?.role === 'super_admin' && (

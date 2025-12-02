@@ -41,8 +41,127 @@ const TenantOnboarding: React.FC = () => {
 
     const [installProgress, setInstallProgress] = useState(0)
     const [installStatus, setInstallStatus] = useState('')
+    const [connectionTest, setConnectionTest] = useState<{
+        status: 'idle' | 'testing' | 'success' | 'error'
+        message: string
+        details?: {
+            host?: string
+            database?: string
+            user?: string
+            latency?: number
+        }
+    }>({
+        status: 'idle',
+        message: ''
+    })
 
-    const handleNext = () => setStep(prev => prev + 1)
+    const testDatabaseConnection = async () => {
+        // Reset previous test
+        setConnectionTest({ status: 'idle', message: '' })
+
+        // Validate required fields
+        if (data.dbMode === 'simple') {
+            if (!data.dbHost || !data.dbName || !data.dbUser || !data.dbPass) {
+                setConnectionTest({
+                    status: 'error',
+                    message: 'All fields are required: Host, Database Name, User, and Password',
+                    details: undefined
+                })
+                return
+            }
+        } else {
+            if (!data.dbString || data.dbString.trim().length === 0) {
+                setConnectionTest({
+                    status: 'error',
+                    message: 'Please provide a valid PostgreSQL connection string',
+                    details: undefined
+                })
+                return
+            }
+        }
+
+        setConnectionTest({ status: 'testing', message: 'Testing connection...' })
+
+        const startTime = Date.now()
+
+        try {
+            // Build connection parameters
+            const connectionParams = data.dbMode === 'simple'
+                ? {
+                    mode: 'simple',
+                    host: data.dbHost,
+                    database: data.dbName,
+                    user: data.dbUser,
+                    password: data.dbPass,
+                    port: 5432
+                }
+                : {
+                    mode: 'advanced',
+                    connectionString: data.dbString
+                }
+
+            // Make API call to test connection
+            const response = await fetch('/api/test-db-connection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(connectionParams)
+            })
+
+            const latency = Date.now() - startTime
+
+            // Handle 404 or missing endpoint
+            if (response.status === 404) {
+                throw new Error('API endpoint not found. Please ensure the backend server is running.')
+            }
+
+            let result
+            try {
+                result = await response.json()
+            } catch (jsonError) {
+                throw new Error('Invalid response from server.')
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || `Connection failed (HTTP ${response.status})`)
+            }
+
+            // Connection successful
+            setConnectionTest({
+                status: 'success',
+                message: 'Connection successful!',
+                details: {
+                    host: data.dbMode === 'simple' ? data.dbHost : result.host || 'From connection string',
+                    database: data.dbMode === 'simple' ? data.dbName : result.database || 'From connection string',
+                    user: data.dbMode === 'simple' ? data.dbUser : result.user || 'From connection string',
+                    latency
+                }
+            })
+        } catch (error: any) {
+            const latency = Date.now() - startTime
+
+            setConnectionTest({
+                status: 'error',
+                message: error.message || 'Connection failed. Please check your credentials and ensure the database server is accessible.',
+                details: {
+                    host: data.dbMode === 'simple' ? data.dbHost : 'Connection string provided',
+                    database: data.dbMode === 'simple' ? data.dbName : 'Connection string provided',
+                    user: data.dbMode === 'simple' ? data.dbUser : 'Connection string provided',
+                    latency
+                }
+            })
+        }
+    }
+
+    const handleNext = () => {
+        // Require connection test before proceeding from step 1
+        if (step === 1 && connectionTest.status !== 'success') {
+            alert('Please test the database connection successfully before proceeding.')
+            return
+        }
+        setStep(prev => prev + 1)
+    }
     const handlePrev = () => setStep(prev => prev - 1)
 
     const handleLogout = async () => {
@@ -227,6 +346,149 @@ const TenantOnboarding: React.FC = () => {
                                     />
                                 </div>
                             )}
+
+
+                            {/* Connection Status Feedback */}
+                            {/* Test Connection Button */}
+                            <div style={{ marginTop: '2rem' }}>
+                                <button
+                                    onClick={testDatabaseConnection}
+                                    disabled={connectionTest.status === 'testing'}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.875rem',
+                                        background: connectionTest.status === 'success' ? '#10b981' : '#667eea',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        cursor: connectionTest.status === 'testing' ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '0.5rem',
+                                        transition: 'all 0.2s',
+                                        opacity: connectionTest.status === 'testing' ? 0.7 : 1
+                                    }}
+                                >
+                                    {connectionTest.status === 'testing' ? (
+                                        <>
+                                            <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                                            Testing Connection...
+                                        </>
+                                    ) : connectionTest.status === 'success' ? (
+                                        <>
+                                            <CheckCircle size={18} />
+                                            Connection Verified ✓
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Database size={18} />
+                                            Test Database Connection
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Connection Test Result */}
+                            {connectionTest.status !== 'idle' && (
+                                <div style={{
+                                    marginTop: '1.5rem',
+                                    padding: '1rem',
+                                    borderRadius: '8px',
+                                    background: connectionTest.status === 'success' ? '#d1fae5' :
+                                        connectionTest.status === 'error' ? '#fee2e2' : '#e0e7ff',
+                                    border: `2px solid ${connectionTest.status === 'success' ? '#10b981' :
+                                        connectionTest.status === 'error' ? '#ef4444' : '#667eea'}`
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        marginBottom: connectionTest.details ? '0.75rem' : 0,
+                                        fontWeight: 600,
+                                        color: connectionTest.status === 'success' ? '#065f46' :
+                                            connectionTest.status === 'error' ? '#991b1b' : '#3730a3'
+                                    }}>
+                                        {connectionTest.status === 'success' && <CheckCircle size={20} />}
+                                        {connectionTest.status === 'error' && <span style={{ fontSize: '1.25rem' }}>❌</span>}
+                                        {connectionTest.status === 'testing' && <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />}
+                                        <span>{connectionTest.message}</span>
+                                    </div>
+
+                                    {connectionTest.details && (
+                                        <div style={{
+                                            fontSize: '0.875rem',
+                                            color: '#374151',
+                                            background: 'white',
+                                            padding: '0.75rem',
+                                            borderRadius: '6px'
+                                        }}>
+                                            <div style={{ marginBottom: '0.5rem' }}>
+                                                <strong>Host:</strong> {connectionTest.details.host}
+                                            </div>
+                                            <div style={{ marginBottom: '0.5rem' }}>
+                                                <strong>Database:</strong> {connectionTest.details.database}
+                                            </div>
+                                            <div style={{ marginBottom: '0.5rem' }}>
+                                                <strong>User:</strong> {connectionTest.details.user}
+                                            </div>
+                                            {connectionTest.details.latency && (
+                                                <div>
+                                                    <strong>Response Time:</strong> {connectionTest.details.latency}ms
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Troubleshooting Guide - Only show on error */}
+                            {connectionTest.status === 'error' && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '1rem',
+                                    background: '#fff7ed',
+                                    borderRadius: '8px',
+                                    border: '1px solid #fb923c'
+                                }}>
+                                    <div style={{
+                                        fontWeight: 600,
+                                        color: '#9a3412',
+                                        marginBottom: '0.75rem',
+                                        fontSize: '0.875rem'
+                                    }}>
+                                        🔧 Troubleshooting Steps:
+                                    </div>
+                                    <ol style={{
+                                        fontSize: '0.8125rem',
+                                        color: '#78350f',
+                                        paddingLeft: '1.25rem',
+                                        margin: 0,
+                                        lineHeight: '1.6'
+                                    }}>
+                                        <li style={{ marginBottom: '0.5rem' }}>
+                                            <strong>Check PostgreSQL is running:</strong> Ensure your PostgreSQL server is installed and running on the specified host
+                                        </li>
+                                        <li style={{ marginBottom: '0.5rem' }}>
+                                            <strong>Verify credentials:</strong> Double-check username, password, and database name are correct
+                                        </li>
+                                        <li style={{ marginBottom: '0.5rem' }}>
+                                            <strong>Database exists:</strong> Make sure the database has been created (use <code style={{ background: '#fed7aa', padding: '0.125rem 0.25rem', borderRadius: '3px' }}>CREATE DATABASE dbname;</code>)
+                                        </li>
+                                        <li style={{ marginBottom: '0.5rem' }}>
+                                            <strong>Network access:</strong> If using a remote host, check firewall rules and ensure port 5432 is accessible
+                                        </li>
+                                        <li style={{ marginBottom: '0.5rem' }}>
+                                            <strong>pg_hba.conf:</strong> Verify PostgreSQL allows connections from your application's IP address
+                                        </li>
+                                        <li>
+                                            <strong>Connection string format:</strong> For advanced mode, ensure format is <code style={{ background: '#fed7aa', padding: '0.125rem 0.25rem', borderRadius: '3px' }}>postgresql://user:pass@host:5432/dbname</code>
+                                        </li>
+                                    </ol>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -356,10 +618,15 @@ const TenantOnboarding: React.FC = () => {
                     {step < 3 ? (
                         <button
                             onClick={handleNext}
-                            disabled={(step === 2 && installProgress < 100) || loading}
+                            disabled={
+                                (step === 1 && connectionTest.status !== 'success') ||
+                                (step === 2 && installProgress < 100) ||
+                                loading
+                            }
                             className="footer-button next"
+                            title={step === 1 && connectionTest.status !== 'success' ? 'Please test database connection successfully before proceeding' : ''}
                         >
-                            Next Step <ArrowRight size={18} />
+                            {connectionTest.status === 'testing' ? 'Testing Connection...' : 'Next Step'} <ArrowRight size={18} />
                         </button>
                     ) : (
                         <button

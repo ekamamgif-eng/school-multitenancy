@@ -37,7 +37,6 @@ const SuperAdminLogin: React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle()
-      // Redirect handled by GoogleAuthCallback
     } catch (error) {
       console.error('Google login failed:', error)
       setError('Google login failed')
@@ -103,6 +102,12 @@ const SuperAdminLogin: React.FC = () => {
           >
             {loading ? <LoadingSpinner size="sm" /> : 'Login as Super Admin'}
           </button>
+
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <a href="/auth/forgot-password" style={{ fontSize: '0.9rem', color: '#667eea', textDecoration: 'none' }}>
+              Forgot Password?
+            </a>
+          </div>
         </form>
 
         <div className="login-divider" style={{ margin: '1.5rem 0', textAlign: 'center', position: 'relative' }}>

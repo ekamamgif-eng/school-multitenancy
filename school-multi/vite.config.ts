@@ -8,15 +8,17 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     strictPort: false,
-    allowedHosts: [
-      'hyetal-unfiscally-voncile.ngrok-free.dev',
-      '.ngrok-free.dev',
-      '.ngrok.io',
-      'localhost'
-    ],
+    allowedHosts: ['hyetal-unfiscally-voncile.ngrok-free.dev'],
     hmr: {
       clientPort: 443,
       protocol: 'wss'
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+        secure: false
+      }
     }
   },
   resolve: {

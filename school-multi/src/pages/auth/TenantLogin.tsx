@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
+import GoogleAuthButton from '../../components/auth/GoogleAuthButton'
 import { supabase } from '../../services/supabase'
 
 interface DiagnosticResult {
@@ -319,7 +320,10 @@ const TenantLogin: React.FC = () => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="password">Password</label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                <label htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
+                                <a href="/auth/forgot-password" style={{ fontSize: '0.85rem', color: '#667eea', textDecoration: 'none' }}>Forgot Password?</a>
+                            </div>
                             <input
                                 id="password"
                                 name="password"
@@ -340,6 +344,14 @@ const TenantLogin: React.FC = () => {
                         >
                             {loading ? <LoadingSpinner size="sm" /> : 'Sign in to Dashboard'}
                         </button>
+
+                        <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div style={{ position: 'relative', textAlign: 'center', marginBottom: '1.5rem' }}>
+                                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', position: 'absolute', width: '100%', top: '50%', zIndex: 0 }} />
+                                <span style={{ background: '#fff', padding: '0 0.75rem', color: '#6b7280', position: 'relative', zIndex: 1, fontSize: '0.875rem' }}>OR</span>
+                            </div>
+                            <GoogleAuthButton fullWidth>Sign in with Google</GoogleAuthButton>
+                        </div>
 
                         <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                             <button

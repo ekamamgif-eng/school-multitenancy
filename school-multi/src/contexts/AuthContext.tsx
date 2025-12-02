@@ -26,7 +26,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const navigate = useNavigate()
 
-  // Simplified: Just use metadata, skip profile fetch for now
+  // Role hierarchy: higher number = higher privilege
+  const getRolePriority = (role: string): number => {
+    const hierarchy: Record<string, number> = {
+      'user': 1,
+      'parent': 2,
+      'admin': 3,
+      'super_admin': 4
+    }
+    return hierarchy[role] || 0
+  }
+
+  // Get the highest role between two roles
+  const getHighestRole = (role1: string, role2: string): User['role'] => {
+    const priority1 = getRolePriority(role1)
+    const priority2 = getRolePriority(role2)
+    return (priority1 >= priority2 ? role1 : role2) as User['role']
+  }
+
+  // Set user from Supabase auth user
   const setUserFromSupabase = (supabaseUser: SupabaseUser) => {
     const mappedUser = mapSupabaseUser(supabaseUser)
     if (mappedUser) {
@@ -38,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  // Background profile fetch (non-blocking)
+  // Background profile fetch with role merging
   const fetchProfileInBackground = async (supabaseUser: SupabaseUser) => {
     try {
       const timeoutPromise = new Promise((_, reject) =>
@@ -54,28 +72,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { data: profile, error } = await Promise.race([fetchPromise, timeoutPromise]) as any
 
       if (profile && !error) {
-        // AUTO-FIX: If metadata says admin but DB says user, trust metadata and update DB
-        if (supabaseUser.user_metadata?.role === 'admin' && profile.role === 'user') {
-          console.warn('⚠️ Role mismatch detected! Metadata says "admin" but DB says "user". Auto-fixing DB...');
+        const metadataRole = supabaseUser.user_metadata?.role || 'user'
+        const dbRole = profile.role || 'user'
 
-          // Fire and forget update
-          supabase.from('profiles').update({ role: 'admin' }).eq('id', supabaseUser.id).then(({ error }) => {
-            if (error) console.error('❌ Failed to auto-correct role:', error);
-          });
+        // Use the highest role between metadata and database
+        const finalRole = getHighestRole(metadataRole, dbRole)
 
-          // Force profile role to be admin for this update so we don't downgrade the user locally
-          profile.role = 'admin';
+        // If roles differ, log and update to highest role
+        if (metadataRole !== dbRole) {
+          console.warn(`⚠️ Role mismatch detected! Metadata: "${metadataRole}", DB: "${dbRole}". Using highest: "${finalRole}"`)
+
+          // Update database to match the highest role
+          supabase.from('profiles').update({ role: finalRole }).eq('id', supabaseUser.id).then(({ error }) => {
+            if (error) {
+              console.error('❌ Failed to sync role to database:', error)
+            } else {
+              console.log(`✅ Role synced to database: ${finalRole}`)
+            }
+          })
+
+          // Update metadata to match the highest role
+          supabase.auth.updateUser({
+            data: { role: finalRole }
+          }).then(({ error }) => {
+            if (error) {
+              console.error('❌ Failed to sync role to metadata:', error)
+            } else {
+              console.log(`✅ Role synced to metadata: ${finalRole}`)
+            }
+          })
         }
 
         setUser(prev => {
           if (!prev) return prev
           return {
             ...prev,
-            role: (profile.role as User['role']) || prev.role,
+            role: finalRole,
             user_metadata: {
               ...prev.user_metadata,
               full_name: profile.name || prev.user_metadata?.full_name,
-              avatar_url: profile.avatar_url || prev.user_metadata?.avatar_url
+              avatar_url: profile.avatar_url || prev.user_metadata?.avatar_url,
+              role: finalRole
             }
           }
         })
