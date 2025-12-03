@@ -9,6 +9,19 @@ import './styles/global.scss'
 import './styles/enhanced-sidebar.scss'
 import './components/auth/LoginActions.scss'
 import './styles/pages.scss'
+import { registerSW } from 'virtual:pwa-register'
+
+// Register Service Worker for PWA
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm('New content available. Reload?')) {
+      updateSW(true)
+    }
+  },
+  onOfflineReady() {
+    console.log('App ready to work offline')
+  },
+})
 
 const queryClient = new QueryClient()
 

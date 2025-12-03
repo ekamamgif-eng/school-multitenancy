@@ -10,6 +10,22 @@ const ResetPasswordPage: React.FC = () => {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
 
+    // Handle recovery token from URL hash
+    React.useEffect(() => {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        const type = hashParams.get('type')
+
+        if (type === 'recovery' && accessToken) {
+            console.log('🔑 Recovery token found, user can now reset password')
+            // Token is automatically handled by Supabase client
+            // User is now authenticated and can update password
+        } else {
+            console.log('⚠️ No recovery token found in URL')
+            setError('Invalid or expired reset link. Please request a new password reset.')
+        }
+    }, [])
+
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -24,7 +40,7 @@ const ResetPasswordPage: React.FC = () => {
 
             setSuccess(true)
             setTimeout(() => {
-                navigate('/auth/login')
+                navigate('/auth/super-admin')
             }, 2000)
         } catch (err: any) {
             setError(err.message || 'Failed to update password')

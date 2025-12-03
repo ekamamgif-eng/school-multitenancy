@@ -64,7 +64,7 @@ const LoginActions: React.FC<LoginActionsProps> = ({
         try {
             addToast('info', 'Mengarahkan ke halaman staff login...')
             setTimeout(() => {
-                navigate('/auth/login')
+                navigate('/login')
             }, 500)
         } catch (error) {
             addToast('error', 'Terjadi kesalahan. Silakan coba lagi.')

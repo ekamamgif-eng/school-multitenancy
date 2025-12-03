@@ -19,11 +19,13 @@ import SuperAdminLogin from './pages/auth/SuperAdminLogin'
 import GoogleAuthCallback from './pages/auth/GoogleAuthCallback'
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import CompleteProfilePage from './pages/auth/CompleteProfilePage'
 import ParentDashboard from './pages/parent/Dashboard'
 import PaymentUploadPage from './pages/parent/PaymentUploadPage'
 import StudentBindingPage from './pages/parent/StudentBindingPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import SuperAdminDashboard from './pages/super-admin/Dashboard'
+import LoginDocumentation from './pages/super-admin/LoginDocumentation'
 import TenantSetup from './pages/tenant/TenantSetup'
 import TenantOnboarding from './pages/tenant/TenantOnboarding'
 import DatabaseSetupGuide from './pages/tenant/DatabaseSetupGuide'
@@ -34,7 +36,7 @@ const AdminRoute = ({ user }: { user: any }) => {
   if (user?.role === 'admin') {
     return <AdminDashboard />;
   }
-  return <Navigate to="/auth/tenant-login" replace />;
+  return <Navigate to="/admin/login" replace />;
 };
 
 const App: React.FC = () => {
@@ -45,7 +47,7 @@ const App: React.FC = () => {
 
   // Auto-redirect admin users to onboarding if not already there
   React.useEffect(() => {
-    if (!authLoading && user?.role === 'admin' && !location.pathname.startsWith('/tenant/onboarding') && !location.pathname.startsWith('/admin')) {
+    if (!authLoading && user?.role === 'admin' && !location.pathname.startsWith('/tenant/onboarding') && !location.pathname.startsWith('/admin') && !location.pathname.startsWith('/help') && !location.pathname.startsWith('/auth')) {
       navigate('/tenant/onboarding', { replace: true })
     }
   }, [user, authLoading, location.pathname, navigate])
@@ -62,8 +64,15 @@ const App: React.FC = () => {
 
         {/* Public Routes - Outside MainLayout */}
         <Route path="/auth/google-callback" element={<GoogleAuthCallback />} />
-        <Route path="/auth/login" element={<LoginPage />} />
-        <Route path="/auth/tenant-login" element={<TenantLogin />} />
+
+        {/* User Login */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/login" element={<Navigate to="/login" replace />} />
+
+        {/* Admin Login */}
+        <Route path="/admin/login" element={<TenantLogin />} />
+        <Route path="/auth/tenant-login" element={<Navigate to="/admin/login" replace />} />
+
         <Route path="/auth/super-admin" element={<SuperAdminLogin />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
@@ -79,6 +88,11 @@ const App: React.FC = () => {
           </Route>
         )}
 
+        {/* Profile Completion */}
+        <Route path="/complete-profile" element={
+          user ? <CompleteProfilePage /> : <Navigate to="/login" replace />
+        } />
+
         {/* SUPER ADMIN ROUTES */}
         {user?.role === 'super_admin' && (
           <>
@@ -87,6 +101,7 @@ const App: React.FC = () => {
 
             <Route path="/super-admin" element={<SuperAdminLayout />}>
               <Route index element={<SuperAdminDashboard />} />
+              <Route path="login-docs" element={<LoginDocumentation />} />
             </Route>
           </>
         )}
@@ -104,7 +119,7 @@ const App: React.FC = () => {
 
         {/* Onboarding is protected for admins */}
         <Route path="/tenant/onboarding" element={
-          user?.role === 'admin' ? <TenantOnboarding /> : <Navigate to="/auth/tenant-login" replace />
+          user?.role === 'admin' ? <TenantOnboarding /> : <Navigate to="/admin/login" replace />
         } />
 
         {/* Database Setup Guide - Public */}

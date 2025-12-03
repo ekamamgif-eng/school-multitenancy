@@ -1,0 +1,125 @@
+.complete-profile-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+
+    .profile-card {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: slideUp 0.5s ease-out;
+
+        .card-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+
+            h2 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                color: white;
+            }
+
+            p {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 0.95rem;
+            }
+        }
+
+        .card-body {
+            padding: 2rem;
+
+            .form-group {
+                margin-bottom: 1.5rem;
+
+                label {
+                    display: block;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: #374151;
+                    margin-bottom: 0.5rem;
+                }
+
+                input,
+                textarea {
+                    width: 100%;
+                    padding: 0.75rem 1rem;
+                    border: 1px solid #d1d5db;
+                    border-radius: 8px;
+                    font-size: 0.95rem;
+                    transition: all 0.2s;
+                    background-color: #f9fafb;
+
+                    &:focus {
+                        outline: none;
+                        border-color: #4f46e5;
+                        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+                        background-color: white;
+                    }
+
+                    &::placeholder {
+                        color: #9ca3af;
+                    }
+                }
+
+                textarea {
+                    resize: vertical;
+                    min-height: 80px;
+                }
+            }
+
+            .btn-submit {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0.875rem;
+                background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.3);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
+
+                &:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+            }
+        }
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

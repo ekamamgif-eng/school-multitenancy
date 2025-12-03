@@ -8,6 +8,16 @@ const GoogleAuthCallback: React.FC = () => {
   const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
+    // Check for recovery token in URL hash (password reset)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const type = hashParams.get('type')
+
+    if (type === 'recovery') {
+      console.log('🔑 Recovery token detected, redirecting to reset password page')
+      navigate('/auth/reset-password' + window.location.hash)
+      return
+    }
+
     const checkUserRole = async () => {
       // Wait for auth loading to complete
       if (loading) return
@@ -30,14 +40,28 @@ const GoogleAuthCallback: React.FC = () => {
         if (user.role === 'super_admin') {
           console.log('✅ Redirecting to Super Admin Dashboard')
           navigate('/super-admin')
+        } else if (user.role === 'admin') {
+          navigate('/tenant/onboarding')
         } else {
-          console.log('⚠️ Role is not super_admin, redirecting to Home')
-          navigate('/')
+          // Check if profile is complete
+          // We check the explicit flag first, then fallback to checking required fields
+          const profile = user as any
+          const isProfileComplete = profile.is_profile_completed ||
+            (profile.phone && profile.address) ||
+            ((user.user_metadata as any)?.phone && (user.user_metadata as any)?.address)
+
+          if (!isProfileComplete) {
+            console.log('⚠️ Profile incomplete, redirecting to completion page')
+            navigate('/complete-profile')
+          } else {
+            console.log('✅ Redirecting to Home')
+            navigate('/')
+          }
         }
       } else if (!loading) {
         // Only redirect if we are sure loading is done and no user
         console.log('❌ No user found after loading')
-        navigate('/auth/login')
+        navigate('/login')
       }
     }
 

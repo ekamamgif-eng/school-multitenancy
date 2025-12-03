@@ -1,6 +1,5 @@
 ﻿import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Database, Server, Palette, HelpCircle, CheckCircle, Layout, ArrowRight, ArrowLeft, Loader, LogOut, Tool, XCircle, Lightbulb } from 'lucide-react'
+import { Database, Server, Palette, CheckCircle, Layout, ArrowRight, ArrowLeft, Loader, LogOut, XCircle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import DatabaseSetupHelpBanner from '../../components/common/DatabaseSetupHelpBanner'
 import '../../styles/onboarding.scss'
