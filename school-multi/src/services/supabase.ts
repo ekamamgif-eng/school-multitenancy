@@ -16,5 +16,6 @@ export const tables = {
   students: 'students',
   parent_student_binding: 'parent_student_binding',
   payment_submissions: 'payment_submissions',
-  meetings: 'meetings'
+  meetings: 'meetings',
+  events: 'events' // Calendar/Events table
 } as const

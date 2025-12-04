@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const fetchPromise = supabase
         .from('profiles')
-        .select('role, name, avatar_url')
+        .select('role, name, avatar_url, phone, address, is_profile_completed')
         .eq('id', supabaseUser.id)
         .single()
 
@@ -108,10 +108,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return {
             ...prev,
             role: finalRole,
+            phone: profile.phone,
+            address: profile.address,
+            is_profile_completed: profile.is_profile_completed,
             user_metadata: {
               ...prev.user_metadata,
               full_name: profile.name || prev.user_metadata?.full_name,
               avatar_url: profile.avatar_url || prev.user_metadata?.avatar_url,
+              phone: profile.phone,
+              address: profile.address,
+              is_profile_completed: profile.is_profile_completed,
               role: finalRole
             }
           }
@@ -119,6 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (err) {
       // Silent fail for background fetch
+      console.warn('Profile fetch failed:', err)
     }
   }
 
