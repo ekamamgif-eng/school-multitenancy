@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { User, Bell, Lock, Moon, Mail, Shield, Database, Save } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../services/supabase'
 
 const SettingsPage: React.FC = () => {
+    const { user, refreshProfile } = useAuth()
     const [activeTab, setActiveTab] = useState('profile')
     const [settings, setSettings] = useState({
         // Profile
-        fullName: 'John Doe',
-        email: 'john.doe@school.com',
-        phone: '+1 234 567 8900',
-        role: 'Teacher',
+        fullName: '',
+        email: '',
+        phone: '',
+        role: '',
 
         // Notifications
         emailNotifications: true,
@@ -19,7 +22,7 @@ const SettingsPage: React.FC = () => {
         // Appearance
         darkMode: false,
         language: 'en',
-        timezone: 'UTC-5',
+        timezone: 'UTC+7',
 
         // Privacy
         profileVisibility: 'public',
@@ -29,13 +32,55 @@ const SettingsPage: React.FC = () => {
 
     const [isSaving, setIsSaving] = useState(false)
 
-    const handleSave = () => {
+    // Load user data when component mounts or user changes
+    useEffect(() => {
+        if (user) {
+            setSettings(prev => ({
+                ...prev,
+                fullName: user.user_metadata?.full_name || user.email || '',
+                email: user.email || '',
+                phone: user.phone || user.user_metadata?.phone || '',
+                role: user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace('_', ' ') : 'User'
+            }))
+        }
+    }, [user])
+
+    const handleSave = async () => {
+        if (!user) return
+
         setIsSaving(true)
-        // Simulate API call
-        setTimeout(() => {
-            setIsSaving(false)
+        try {
+            // Update profiles table
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    name: settings.fullName,
+                    phone: settings.phone
+                })
+                .eq('id', user.id)
+
+            if (profileError) throw profileError
+
+            // Update auth metadata
+            const { error: authError } = await supabase.auth.updateUser({
+                data: {
+                    full_name: settings.fullName,
+                    phone: settings.phone
+                }
+            })
+
+            if (authError) throw authError
+
+            // Refresh profile to get updated data
+            await refreshProfile()
+
             alert('Settings saved successfully!')
-        }, 1000)
+        } catch (error: any) {
+            console.error('Error saving settings:', error)
+            alert(`Failed to save settings: ${error.message || 'Unknown error'}`)
+        } finally {
+            setIsSaving(false)
+        }
     }
 
     const tabs = [

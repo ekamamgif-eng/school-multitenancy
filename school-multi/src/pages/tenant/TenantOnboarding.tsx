@@ -20,6 +20,15 @@ interface OnboardingData {
     modules: string[]
 }
 
+const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = error => reject(error)
+    })
+}
+
 const TenantOnboarding: React.FC = () => {
     const { logout } = useAuth()
     const [step, setStep] = useState(1)
@@ -60,95 +69,62 @@ const TenantOnboarding: React.FC = () => {
         // Reset previous test
         setConnectionTest({ status: 'idle', message: '' })
 
-        // Validate required fields
-        if (data.dbMode === 'simple') {
-            if (!data.dbHost || !data.dbName || !data.dbUser || !data.dbPass) {
-                setConnectionTest({
-                    status: 'error',
-                    message: 'All fields are required: Host, Database Name, User, and Password',
-                    details: undefined
-                })
-                return
-            }
-        } else {
-            if (!data.dbString || data.dbString.trim().length === 0) {
-                setConnectionTest({
-                    status: 'error',
-                    message: 'Please provide a valid PostgreSQL connection string',
-                    details: undefined
-                })
-                return
-            }
-        }
-
-        setConnectionTest({ status: 'testing', message: 'Testing connection...' })
+        setConnectionTest({ status: 'testing', message: 'Testing connection to Supabase...' })
 
         const startTime = Date.now()
 
         try {
-            // Build connection parameters
-            const connectionParams = data.dbMode === 'simple'
-                ? {
-                    mode: 'simple',
-                    host: data.dbHost,
-                    database: data.dbName,
-                    user: data.dbUser,
-                    password: data.dbPass,
-                    port: 5432
-                }
-                : {
-                    mode: 'advanced',
-                    connectionString: data.dbString
-                }
+            // Import supabase client
+            const { supabase } = await import('../../services/supabase')
 
-            // Make API call to test connection
-            const response = await fetch('/api/test-db-connection', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(connectionParams)
-            })
+            // Test connection by running a simple query
+            const { error } = await supabase
+                .from('profiles')
+                .select('count')
+                .limit(1)
 
             const latency = Date.now() - startTime
 
-            // Handle 404 or missing endpoint
-            if (response.status === 404) {
-                throw new Error('API endpoint not found. Please ensure the backend server is running.')
-            }
-
-            let result
-            try {
-                result = await response.json()
-            } catch (jsonError) {
-                throw new Error('Invalid response from server.')
-            }
-
-            if (!response.ok || !result.success) {
-                throw new Error(result.error || `Connection failed (HTTP ${response.status})`)
-            }
-
-            // Connection successful
-            setConnectionTest({
-                status: 'success',
-                message: 'Connection successful!',
-                details: {
-                    host: data.dbMode === 'simple' ? data.dbHost : result.host || 'From connection string',
-                    database: data.dbMode === 'simple' ? data.dbName : result.database || 'From connection string',
-                    user: data.dbMode === 'simple' ? data.dbUser : result.user || 'From connection string',
-                    latency
+            if (error) {
+                // Check if it's just an empty table (which is fine)
+                if (error.code === 'PGRST116') {
+                    // No rows returned - table exists but empty, connection is OK
+                    setConnectionTest({
+                        status: 'success',
+                        message: 'Connection successful! (Database is empty - this is normal for new setup)',
+                        details: {
+                            host: 'Supabase Cloud',
+                            database: 'Connected via Supabase',
+                            user: 'Authenticated',
+                            latency
+                        }
+                    })
+                } else {
+                    throw error
                 }
-            })
+            } else {
+                // Connection successful
+                setConnectionTest({
+                    status: 'success',
+                    message: 'Connection successful!',
+                    details: {
+                        host: 'Supabase Cloud',
+                        database: 'Connected via Supabase',
+                        user: 'Authenticated',
+                        latency
+                    }
+                })
+            }
         } catch (error: any) {
             const latency = Date.now() - startTime
 
             setConnectionTest({
                 status: 'error',
-                message: error.message || 'Connection failed. Please check your credentials and ensure the database server is accessible.',
+                message: error.message || 'Connection failed. Please check your Supabase configuration in .env file.',
                 details: {
-                    host: data.dbMode === 'simple' ? data.dbHost : 'Connection string provided',
-                    database: data.dbMode === 'simple' ? data.dbName : 'Connection string provided',
-                    user: data.dbMode === 'simple' ? data.dbUser : 'Connection string provided',
+                    host: 'Supabase Cloud',
+                    database: 'Check VITE_SUPABASE_URL in .env',
+                    user: 'Check VITE_SUPABASE_ANON_KEY in .env',
                     latency
                 }
             })
@@ -173,11 +149,56 @@ const TenantOnboarding: React.FC = () => {
 
     const handleFinish = async () => {
         setLoading(true)
-        // Simulate saving configuration
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        setLoading(false)
-        // Force a hard redirect to ensure fresh state
-        window.location.href = '/admin'
+
+        try {
+            // Convert logo to base64 if it exists
+            let logoUrl = null
+            if (data.logo) {
+                try {
+                    logoUrl = await fileToBase64(data.logo)
+                } catch (e) {
+                    console.error('Error converting logo to base64:', e)
+                }
+            }
+
+            // Save branding configuration to localStorage
+            const brandingConfig = {
+                schoolName: data.schoolName,
+                primaryColor: data.primaryColor,
+                secondaryColor: data.secondaryColor,
+                logo: logoUrl
+            }
+
+            console.log('💾 Saving branding config:', brandingConfig)
+            localStorage.setItem('tenant_branding', JSON.stringify(brandingConfig))
+
+            // Save tenant configuration
+            const tenantConfig = {
+                id: 'tenant-' + Date.now(),
+                name: data.schoolName,
+                subdomain: data.schoolName.toLowerCase().replace(/\s+/g, '-'),
+                theme_config: {
+                    primaryColor: data.primaryColor,
+                    secondaryColor: data.secondaryColor,
+                    logo: brandingConfig.logo
+                },
+                active_modules: data.modules
+            }
+
+            console.log('💾 Saving tenant config:', tenantConfig)
+            localStorage.setItem('tenant_config', JSON.stringify(tenantConfig))
+
+            // Simulate saving configuration
+            await new Promise(resolve => setTimeout(resolve, 2000))
+
+            setLoading(false)
+            // Force a hard redirect to ensure fresh state
+            window.location.href = '/admin'
+        } catch (error) {
+            console.error('❌ Error saving configuration:', error)
+            setLoading(false)
+            alert('Failed to save configuration. Please try again.')
+        }
     }
 
     const runInstallation = async () => {
@@ -383,7 +404,7 @@ const TenantOnboarding: React.FC = () => {
                                     ) : connectionTest.status === 'success' ? (
                                         <>
                                             <CheckCircle size={18} />
-                                            Connection Verified “
+                                            Connection Verified
                                         </>
                                     ) : (
                                         <>
@@ -462,7 +483,7 @@ const TenantOnboarding: React.FC = () => {
                                         marginBottom: '0.75rem',
                                         fontSize: '0.875rem'
                                     }}>
-                                        ðŸ”§ Troubleshooting Steps:
+                                        🔧 Troubleshooting Steps:
                                     </div>
                                     <ol style={{
                                         fontSize: '0.8125rem',

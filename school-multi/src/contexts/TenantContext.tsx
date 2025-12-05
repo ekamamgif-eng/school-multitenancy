@@ -19,20 +19,29 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
   const detectTenant = useCallback(async (): Promise<void> => {
     try {
-      // For now, use default tenant (mocked) - in production, detect from subdomain
-      const mockTenant: Tenant = {
-        id: 'demo',
-        name: 'Sekolah Demo',
-        subdomain: 'demo',
-        theme_config: {
-          primaryColor: '#3b82f6',
-          secondaryColor: '#64748b',
-        },
-        active_modules: ['academic', 'payment', 'meeting']
+      // Try to load from localStorage first (from onboarding)
+      const savedTenant = localStorage.getItem('tenant_config')
+
+      if (savedTenant) {
+        const parsedTenant = JSON.parse(savedTenant)
+        setTenant(parsedTenant)
+        applyTenantTheme(parsedTenant)
+      } else {
+        // Fallback to demo tenant if no config found
+        const mockTenant: Tenant = {
+          id: 'demo',
+          name: 'Sekolah Demo',
+          subdomain: 'demo',
+          theme_config: {
+            primaryColor: '#3b82f6',
+            secondaryColor: '#64748b',
+          },
+          active_modules: ['academic', 'payment', 'meeting']
+        }
+
+        setTenant(mockTenant)
+        applyTenantTheme(mockTenant)
       }
-      
-      setTenant(mockTenant)
-      applyTenantTheme(mockTenant)
     } catch (error) {
       console.error('Tenant detection failed:', error)
       // Fallback tenant
@@ -58,7 +67,14 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     if (tenant.theme_config) {
       Object.entries(tenant.theme_config).forEach(([key, value]) => {
         if (value && (key.startsWith('color') || key.includes('Color'))) {
+          // Set original key (e.g., --primaryColor)
           root.style.setProperty(`--${key}`, value)
+
+          // Also set kebab-case (e.g., --primary-color) for SCSS compatibility
+          const kebabKey = key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+          if (kebabKey !== key) {
+            root.style.setProperty(`--${kebabKey}`, value)
+          }
         }
       })
     }
