@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, Users, X, Edit, Trash2, Calendar as CalendarIcon } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, Users, X, Edit, Trash2 } from 'lucide-react'
 
 interface Event {
     id: string
@@ -14,6 +15,7 @@ interface Event {
 }
 
 const CalendarPage: React.FC = () => {
+    const { user } = useAuth()
     const [currentDate, setCurrentDate] = useState(new Date())
     const [showModal, setShowModal] = useState(false)
     const [editingEvent, setEditingEvent] = useState<Event | null>(null)
@@ -129,6 +131,8 @@ const CalendarPage: React.FC = () => {
         .sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
         .slice(0, 5)
 
+    const canManageEvents = ['admin', 'super_admin', 'teacher'].includes(user?.role || '')
+
     // CRUD Handlers
     const handleOpenAddModal = () => {
         setEditingEvent(null)
@@ -196,10 +200,12 @@ const CalendarPage: React.FC = () => {
                     <h1 className="page-title">Calendar</h1>
                     <p className="page-subtitle">Schedule and manage your events</p>
                 </div>
-                <button className="btn btn-primary" onClick={handleOpenAddModal}>
-                    <Plus size={20} />
-                    Add Event
-                </button>
+                {canManageEvents && (
+                    <button className="btn btn-primary" onClick={handleOpenAddModal}>
+                        <Plus size={20} />
+                        Add Event
+                    </button>
+                )}
             </div>
 
             <div className="calendar-layout">
@@ -256,7 +262,9 @@ const CalendarPage: React.FC = () => {
                                                         style={{ backgroundColor: event.color, cursor: 'pointer' }}
                                                         onClick={(e) => {
                                                             e.stopPropagation()
-                                                            handleOpenEditModal(event)
+                                                            if (canManageEvents) {
+                                                                handleOpenEditModal(event)
+                                                            }
                                                         }}
                                                         title={event.title}
                                                     >
@@ -310,22 +318,24 @@ const CalendarPage: React.FC = () => {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-1 rounded shadow-sm">
-                                        <button
-                                            onClick={() => handleOpenEditModal(event)}
-                                            className="p-1 hover:bg-gray-100 rounded text-blue-600"
-                                            title="Edit"
-                                        >
-                                            <Edit size={14} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteEvent(event.id)}
-                                            className="p-1 hover:bg-gray-100 rounded text-red-600"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
-                                    </div>
+                                    {canManageEvents && (
+                                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-1 rounded shadow-sm">
+                                            <button
+                                                onClick={() => handleOpenEditModal(event)}
+                                                className="p-1 hover:bg-gray-100 rounded text-blue-600"
+                                                title="Edit"
+                                            >
+                                                <Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteEvent(event.id)}
+                                                className="p-1 hover:bg-gray-100 rounded text-red-600"
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         )}
