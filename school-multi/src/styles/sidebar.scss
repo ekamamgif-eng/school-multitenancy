@@ -1,0 +1,284 @@
+// Sidebar Styles
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 280px;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+
+    &.collapsed {
+        width: 80px;
+
+        .school-name,
+        .school-type,
+        .menu-label,
+        .menu-badge {
+            display: none;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 0.75rem;
+        }
+
+        .logo-container {
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            margin-left: 0;
+        }
+    }
+}
+
+// Header
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.logo-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: white;
+    padding: 4px;
+}
+
+.logo-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.school-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.school-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.school-type {
+    font-size: 0.75rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toggle-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// Navigation
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem 0;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+}
+
+.menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-item {
+    margin: 0;
+    padding: 0 0.75rem;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+    margin-bottom: 0.25rem;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    &.active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: white;
+            border-radius: 0 2px 2px 0;
+        }
+    }
+
+    .sidebar.collapsed & {
+        justify-content: center;
+        padding: 0.75rem;
+    }
+}
+
+.menu-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-label {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.menu-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    min-width: 20px;
+    text-align: center;
+}
+
+// Footer
+.sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem;
+
+    .menu-link {
+        margin-bottom: 0.25rem;
+    }
+
+    .logout-btn {
+        background: none;
+        border: none;
+        width: 100%;
+        cursor: pointer;
+        font-family: inherit;
+
+        &:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+
+        &:not(.collapsed) {
+            width: 280px;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .school-name,
+        .school-type,
+        .menu-label,
+        .menu-badge {
+            display: none;
+        }
+
+        &:not(.collapsed) {
+
+            .school-name,
+            .school-type,
+            .menu-label,
+            .menu-badge {
+                display: block;
+            }
+        }
+    }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+    }
+}

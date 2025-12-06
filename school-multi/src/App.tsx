@@ -30,6 +30,10 @@ import TenantSetup from './pages/tenant/TenantSetup'
 import TenantOnboarding from './pages/tenant/TenantOnboarding'
 import DatabaseSetupGuide from './pages/tenant/DatabaseSetupGuide'
 import LoadingSpinner from './components/common/LoadingSpinner'
+// Student Management
+import StudentsList from './pages/admin/students/StudentsList'
+import StudentForm from './pages/admin/students/StudentForm'
+import StudentDetail from './pages/admin/students/StudentDetail'
 
 // Helper component for admin route protection
 const AdminRoute = ({ user }: { user: any }) => {
@@ -128,6 +132,11 @@ const App: React.FC = () => {
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AuthLayout />}>
           <Route index element={<AdminRoute user={user} />} />
+          {/* Students Management */}
+          <Route path="students" element={<StudentsList />} />
+          <Route path="students/add" element={<StudentForm />} />
+          <Route path="students/:id" element={<StudentDetail />} />
+          <Route path="students/:id/edit" element={<StudentForm />} />
         </Route>
 
         {/* 404 Route */}

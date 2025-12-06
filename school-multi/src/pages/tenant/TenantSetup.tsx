@@ -61,11 +61,13 @@ const AddNewTenant: React.FC = () => {
                         id: data.user.id,
                         email: formData.email,
                         role: 'admin',
-                        name: formData.email.split('@')[0]
+                        name: formData.email.split('@')[0],
+                        is_profile_completed: false  // Admin akan complete via onboarding
                     })
 
                 if (profileError) {
-                    console.warn('Profile creation warning:', profileError)
+                    console.error('Profile creation error:', profileError)
+                    throw new Error(`Failed to create admin profile: ${profileError.message}`)
                 }
             }
 

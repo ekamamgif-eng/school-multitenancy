@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Users,
   GraduationCap,
@@ -16,6 +17,7 @@ import { useTenant } from '../../contexts/TenantContext'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate()
   const [timeRange, setTimeRange] = useState('week')
   const { tenant, loading: tenantLoading } = useTenant()
 
@@ -222,7 +224,7 @@ const AdminDashboard: React.FC = () => {
           <h2 className="card-title">Quick Actions</h2>
         </div>
         <div className="quick-actions-grid">
-          <button className="quick-action-btn" onClick={() => alert('Add Student feature coming soon!')}>
+          <button className="quick-action-btn" onClick={() => navigate('/admin/students/add')}>
             <Users size={20} />
             <span>Add Student</span>
           </button>

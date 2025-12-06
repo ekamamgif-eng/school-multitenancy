@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, Eye, Filter } from 'lucide-react'
 import { useTenant } from '../../../contexts/TenantContext'
-import { useAuth } from '../../../contexts/AuthContext'
 import { getStudents, deleteStudent, getClassList, getAcademicYears, StudentFilters } from '../../../services/studentService'
 import { Student } from '../../../types'
 import '../../../styles/students.scss'
@@ -10,7 +9,6 @@ import '../../../styles/students.scss'
 const StudentsList: React.FC = () => {
     const navigate = useNavigate()
     const { tenant } = useTenant()
-    const { user } = useAuth()
 
     const [students, setStudents] = useState<Student[]>([])
     const [loading, setLoading] = useState(true)

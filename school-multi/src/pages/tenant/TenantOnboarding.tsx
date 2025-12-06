@@ -199,22 +199,28 @@ const TenantOnboarding: React.FC = () => {
 
             console.log('✅ Tenant saved successfully:', savedTenant)
 
-            // Link tenant to user profile
+            // Create or update user profile and link to tenant
             if (user) {
-                console.log('🔗 Linking tenant to user profile:', user.id)
+                console.log('🔗 Creating/updating user profile:', user.id)
+
+                // Use upsert to create profile if it doesn't exist
                 const { error: profileError } = await supabase
                     .from('profiles')
-                    .update({
+                    .upsert({
+                        id: user.id,
+                        email: user.email,
                         tenant_id: savedTenant.id,
-                        role: 'admin' // Ensure they are the admin
+                        role: 'admin',
+                        is_profile_completed: true
+                    }, {
+                        onConflict: 'id' // Update if exists
                     })
-                    .eq('id', user.id)
 
                 if (profileError) {
-                    console.error('❌ Error linking tenant to profile:', profileError)
-                    // Don't block flow, but log error
+                    console.error('❌ Error creating/linking profile:', profileError)
+                    throw new Error(`Failed to create admin profile: ${profileError.message}`)
                 } else {
-                    console.log('✅ Profile linked successfully')
+                    console.log('✅ Profile created/linked successfully')
                 }
             }
 
