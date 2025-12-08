@@ -254,18 +254,39 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
       // Strategy 3: Mock/Demo Fallback (if no other tenant found)
       // Only verify against checking a 'public' landing page or similar in future
       if (!foundTenant) {
-        const mockTenant: Tenant = {
-          id: 'demo',
-          name: 'Sekolah Demo',
-          subdomain: 'demo',
-          theme_config: {
-            primaryColor: '#3b82f6',
-            secondaryColor: '#64748b',
-          },
-          active_modules: ['academic', 'payment', 'meeting'],
-          status: 'trial'
+        // Semantic fallback for specific known tenants if DB is empty
+        const pathSlug = getSlugFromPath()
+
+        if (pathSlug === 'proza-bangsa') {
+          const prozaTenant: Tenant = {
+            id: 'proza-bangsa-mock',
+            name: 'Proza Bangsa',
+            subdomain: 'proza-bangsa',
+            theme_config: {
+              primaryColor: '#0f766e',
+              secondaryColor: '#115e59',
+              // Using a placeholder logo that looks professional
+              logo: "https://cdn-icons-png.flaticon.com/512/8074/8074788.png"
+            },
+            active_modules: ['academic', 'students', 'teachers', 'finance', 'library', 'transport'],
+            status: 'active'
+          }
+          foundTenant = prozaTenant
+        } else {
+          // Default Demo School
+          const mockTenant: Tenant = {
+            id: 'demo',
+            name: 'Sekolah Demo',
+            subdomain: 'demo',
+            theme_config: {
+              primaryColor: '#3b82f6',
+              secondaryColor: '#64748b',
+            },
+            active_modules: ['academic', 'payment', 'meeting'],
+            status: 'trial'
+          }
+          foundTenant = mockTenant
         }
-        foundTenant = mockTenant
       }
 
       if (foundTenant) {
