@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Tenant - School Multi-Tenant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 3rem;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #c33;
+        }
+
+        .tenant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tenant-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tenant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .tenant-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tenant-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .tenant-info h2 {
+            font-size: 1.3rem;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .tenant-subdomain {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tenant-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .branding-colors {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .access-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .stats {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏫 Daftar Tenant Sekolah</h1>
+            <p>Pilih sekolah untuk mengakses sistem</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <p>⏳ Memuat data tenant...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="stats" class="stats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTenants">0</div>
+                    <div class="stat-label">Total Tenant</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeTenants">0</div>
+                    <div class="stat-label">Tenant Aktif</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tenantGrid" class="tenant-grid"></div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        // Supabase configuration
+        const supabaseUrl = 'https://stywborxrxfullxmyycx.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0eXdib3J4cnhmdWxseG15eWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzcyNzEsImV4cCI6MjA3ODk1MzI3MX0.Nov8gmB42asjaaHDPBNuK7proUrqoL6gNVeWJuq5HPw'
+
+        const supabase = createClient(supabaseUrl, supabaseKey)
+        const ngrokUrl = 'https://hyetal-unfiscally-voncile.ngrok-free.dev'
+
+        async function loadTenants() {
+            try {
+                const { data: tenants, error } = await supabase
+                    .from('tenants')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+
+                if (error) throw error
+
+                document.getElementById('loading').style.display = 'none'
+
+                if (!tenants || tenants.length === 0) {
+                    document.getElementById('error').textContent = '📭 Tidak ada tenant yang ditemukan di database'
+                    document.getElementById('error').style.display = 'block'
+                    return
+                }
+
+                // Show stats
+                document.getElementById('stats').style.display = 'block'
+                document.getElementById('totalTenants').textContent = tenants.length
+                document.getElementById('activeTenants').textContent = tenants.filter(t => t.status === 'active').length
+
+                // Render tenant cards
+                const grid = document.getElementById('tenantGrid')
+                grid.innerHTML = tenants.map(tenant => createTenantCard(tenant)).join('')
+
+            } catch (err) {
+                console.error('Error:', err)
+                document.getElementById('loading').style.display = 'none'
+                document.getElementById('error').textContent = `❌ Error: ${err.message}`
+                document.getElementById('error').style.display = 'block'
+            }
+        }
+
+        function createTenantCard(tenant) {
+            const schoolName = tenant.school_name || tenant.name || 'Unnamed School'
+            const subdomain = tenant.subdomain || 'unknown'
+            const status = tenant.status || 'unknown'
+            const logoUrl = tenant.branding?.logo_url || tenant.theme_config?.logo
+            const primaryColor = tenant.branding?.primary_color || tenant.theme_config?.primaryColor || '#667eea'
+            const secondaryColor = tenant.branding?.secondary_color || tenant.theme_config?.secondaryColor || '#764ba2'
+
+            const ngrokLink = `${ngrokUrl}?tenant=${subdomain}`
+            const localLink = `http://localhost:5173?tenant=${subdomain}`
+
+            return `
+                <div class="tenant-card">
+                    <div class="tenant-header">
+                        <div class="tenant-logo" style="background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor})">
+                            ${logoUrl ? `<img src="${logoUrl}" alt="${schoolName}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : schoolName.charAt(0)}
+                        </div>
+                        <div class="tenant-info">
+                            <h2>${schoolName}</h2>
+                            <div class="tenant-subdomain">@${subdomain}</div>
+                        </div>
+                    </div>
+
+                    <div class="tenant-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="status-badge status-${status}">${status.toUpperCase()}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">ID:</span>
+                            <span class="detail-value">${tenant.id.substring(0, 8)}...</span>
+                        </div>
+                        ${tenant.contact_email ? `
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">${tenant.contact_email}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    ${primaryColor && secondaryColor ? `
+                    <div class="branding-colors">
+                        <div class="color-swatch" style="background: ${primaryColor}" title="Primary: ${primaryColor}"></div>
+                        <div class="color-swatch" style="background: ${secondaryColor}" title="Secondary: ${secondaryColor}"></div>
+                    </div>
+                    ` : ''}
+
+                    <div class="access-buttons">
+                        <a href="${ngrokLink}" class="btn btn-primary" target="_blank">
+                            🌐 Buka via Ngrok
+                        </a>
+                        <a href="${localLink}" class="btn btn-secondary" target="_blank">
+                            💻 Buka Localhost
+                        </a>
+                    </div>
+                </div>
+            `
+        }
+
+        // Load tenants on page load
+        loadTenants()
+    </script>
+</body>
+
+</html>

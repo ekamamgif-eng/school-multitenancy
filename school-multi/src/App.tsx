@@ -26,10 +26,13 @@ import StudentBindingPage from './pages/parent/StudentBindingPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import SuperAdminDashboard from './pages/super-admin/Dashboard'
 import LoginDocumentation from './pages/super-admin/LoginDocumentation'
+import SchoolDetail from './pages/super-admin/SchoolDetail'
+import SchoolForm from './pages/super-admin/SchoolForm'
 import TenantSetup from './pages/tenant/TenantSetup'
 import TenantOnboarding from './pages/tenant/TenantOnboarding'
 import DatabaseSetupGuide from './pages/tenant/DatabaseSetupGuide'
 import LoadingSpinner from './components/common/LoadingSpinner'
+import NotFoundOrTenantPage from './components/common/NotFoundOrTenantPage'
 // Student Management
 import StudentsList from './pages/admin/students/StudentsList'
 import StudentForm from './pages/admin/students/StudentForm'
@@ -90,7 +93,8 @@ const App: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/login" element={<Navigate to="/login" replace />} />
 
-        {/* Admin Login */}
+        {/* Tenant Landing / Login */}
+        <Route path="/tenant" element={<TenantLogin />} />
         <Route path="/admin/login" element={<TenantLogin />} />
         <Route path="/auth/tenant-login" element={<Navigate to="/admin/login" replace />} />
 
@@ -123,6 +127,9 @@ const App: React.FC = () => {
             <Route path="/super-admin" element={<SuperAdminLayout />}>
               <Route index element={<SuperAdminDashboard />} />
               <Route path="login-docs" element={<LoginDocumentation />} />
+              <Route path="schools/:id" element={<SchoolDetail />} />
+              <Route path="schools/add" element={<SchoolForm />} />
+              <Route path="schools/:id/edit" element={<SchoolForm />} />
             </Route>
           </>
         )}
@@ -169,8 +176,9 @@ const App: React.FC = () => {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 
-        {/* 404 Route */}
-        <Route path="*" element={<div>404 - Page Not Found</div>} />
+        {/* Dynamic Tenant Landing Page OR 404 */}
+        {/* This smart component will determine if the path is a tenant slug or a 404 */}
+        <Route path="*" element={<NotFoundOrTenantPage />} />
       </Routes>
     </div>
   )

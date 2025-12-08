@@ -50,6 +50,94 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     }
   }
 
+
+  const fetchTenantBySubdomain = async (subdomain: string): Promise<Tenant | null> => {
+    try {
+      const { data: tenantData, error } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('subdomain', subdomain)
+        .maybeSingle()
+
+      if (error) {
+        throw error
+      }
+
+      if (tenantData) {
+        return {
+          id: tenantData.id,
+          name: tenantData.name,
+          subdomain: tenantData.subdomain,
+          theme_config: tenantData.theme_config || {},
+          active_modules: tenantData.active_modules || [],
+          status: tenantData.status || 'active'
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching tenant by subdomain:', err)
+      return null
+    }
+    return null
+  }
+
+  const getSubdomain = (): string | null => {
+    const hostname = window.location.hostname
+    const parts = hostname.split('.')
+
+    // Localhost development support (e.g. tenant1.localhost)
+    if (hostname.includes('localhost')) {
+      if (parts.length >= 2 && parts[0] !== 'www') {
+        return parts[0]
+      }
+      return null
+    }
+
+    // Production (e.g. tenant1.school.com)
+    // Assumes 3+ parts: [subdomain, domain, tld]
+    if (parts.length > 2 && parts[0] !== 'www') {
+      return parts[0]
+    }
+
+    return null
+  }
+
+  const getTenantFromQuery = (): string | null => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const tenantParam = urlParams.get('tenant')
+
+    if (tenantParam) {
+      console.log('🔍 Detected tenant from query parameter:', tenantParam)
+      return tenantParam
+    }
+
+    return null
+  }
+
+
+
+  const getSlugFromPath = (): string | null => {
+    const path = window.location.pathname
+    // Split by '/' and get the first segment
+    const segments = path.split('/').filter(Boolean)
+
+    if (segments.length === 0) return null
+
+    const firstSegment = segments[0].toLowerCase()
+
+    // List of reserved system paths that cannot be tenant slugs
+    const reservedPaths = [
+      'login', 'auth', 'admin', 'super-admin', 'parent', 'tenant',
+      'help', 'complete-profile', 'assets', 'static', 'api'
+    ]
+
+    if (reservedPaths.includes(firstSegment)) {
+      return null
+    }
+
+    // Return the potential tenant slug
+    return firstSegment
+  }
+
   const fetchTenantFromSupabase = async (userId: string): Promise<Tenant | null> => {
     try {
       // 1. Get tenant_id from user profile
@@ -86,7 +174,8 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
           name: tenantData.name,
           subdomain: tenantData.subdomain,
           theme_config: tenantData.theme_config || {},
-          active_modules: tenantData.active_modules || []
+          active_modules: tenantData.active_modules || [],
+          status: tenantData.status || 'active'
         }
       }
     } catch (err) {
@@ -106,13 +195,51 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     try {
       let foundTenant: Tenant | null = null
 
-      // Strategy 1: Check authenticated user
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        foundTenant = await fetchTenantFromSupabase(session.user.id)
+      // Strategy 0: Check Query Parameter (highest priority for ngrok/testing)
+      const queryTenant = getTenantFromQuery()
+      if (queryTenant) {
+        foundTenant = await fetchTenantBySubdomain(queryTenant)
+        if (foundTenant) {
+          console.log('✅ Found tenant via query parameter:', foundTenant.name)
+        }
       }
 
-      // Strategy 2: Check localStorage (Onboarding/Dev Config)
+      // Strategy 1: Check Subdomain
+      if (!foundTenant) {
+        const subdomain = getSubdomain()
+        if (subdomain) {
+          console.log('🔍 Detected subdomain:', subdomain)
+          foundTenant = await fetchTenantBySubdomain(subdomain)
+          if (foundTenant) {
+            console.log('✅ Found tenant via subdomain:', foundTenant.name)
+          }
+        }
+      }
+
+      // Strategy 1.5: Check Path Slug (e.g. /sma-berdikari)
+      if (!foundTenant) {
+        const pathSlug = getSlugFromPath()
+        if (pathSlug) {
+          console.log('🔍 Detected path slug:', pathSlug)
+          // We reuse fetchTenantBySubdomain since specific school slugs are stored in the 'subdomain' column
+          foundTenant = await fetchTenantBySubdomain(pathSlug)
+          if (foundTenant) {
+            console.log('✅ Found tenant via path slug:', foundTenant.name)
+          }
+        }
+      }
+
+      // Strategy 2: Check authenticated user (fallback if no subdomain or subdomain verify failed)
+      // Note: In strict mode, we might want to FORCE the subdomain tenant even if logged in user is different
+      // but for now let's keep it additive.
+      if (!foundTenant) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user) {
+          foundTenant = await fetchTenantFromSupabase(session.user.id)
+        }
+      }
+
+      // Strategy 3: Check localStorage (Onboarding/Dev Config)
       if (!foundTenant) {
         const savedTenant = localStorage.getItem('tenant_config')
         if (savedTenant) {
@@ -135,7 +262,8 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
             primaryColor: '#3b82f6',
             secondaryColor: '#64748b',
           },
-          active_modules: ['academic', 'payment', 'meeting']
+          active_modules: ['academic', 'payment', 'meeting'],
+          status: 'trial'
         }
         foundTenant = mockTenant
       }
@@ -155,7 +283,8 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
         name: 'Default School',
         subdomain: 'default',
         theme_config: {},
-        active_modules: []
+        active_modules: [],
+        status: 'active'
       }
       setTenant(fallbackTenant)
     } finally {

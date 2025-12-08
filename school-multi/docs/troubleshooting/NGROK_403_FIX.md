@@ -6,7 +6,7 @@ Error 403 terjadi karena ngrok free tier menampilkan warning page sebelum mengak
 ## Solusi
 
 ### Cara 1: Manual Click "Visit Site" (Paling Mudah)
-1. Buka `https://hyetal-unfiscally-voncile.ngrok-free.dev` di browser
+1. Buka `https://glairier-gwyn-rubicund.ngrok-free.dev` di browser
 2. Akan muncul halaman warning dari ngrok
 3. Klik tombol **"Visit Site"**
 4. Halaman akan ter-bookmark dan tidak akan muncul lagi untuk beberapa waktu
@@ -40,7 +40,7 @@ Ngrok paid plan tidak memiliki warning page:
 
 **Lakukan ini:**
 1. Buka browser baru (atau incognito)
-2. Akses: `https://hyetal-unfiscally-voncile.ngrok-free.dev`
+2. Akses: `https://glairier-gwyn-rubicund.ngrok-free.dev`
 3. Klik "Visit Site" saat muncul warning
 4. Browser akan mengingat pilihan Anda
 5. Test login Google

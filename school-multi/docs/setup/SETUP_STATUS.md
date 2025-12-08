@@ -8,7 +8,7 @@
 - ✅ Allowed Hosts: Sudah termasuk ngrok domain
 
 ### 2. Ngrok Tunnel
-- ✅ Berjalan di: `https://hyetal-unfiscally-voncile.ngrok-free.dev`
+- ✅ Berjalan di: `https://glairier-gwyn-rubicund.ngrok-free.dev`
 - ✅ Forwarding ke: `http://localhost:5173`
 
 ### 3. Vite Configuration
@@ -17,14 +17,14 @@
 - ✅ StrictPort: false
 
 ### 4. Environment Variables
-- ✅ VITE_APP_URL: `https://hyetal-unfiscally-voncile.ngrok-free.dev`
+- ✅ VITE_APP_URL: `https://glairier-gwyn-rubicund.ngrok-free.dev`
 - ✅ Supabase credentials: Configured
 
 ## 🚀 Cara Test Sekarang:
 
 ### Step 1: Buka Browser
 ```
-https://hyetal-unfiscally-voncile.ngrok-free.dev
+https://glairier-gwyn-rubicund.ngrok-free.dev
 ```
 
 ### Step 2: Bypass Ngrok Warning
@@ -52,12 +52,12 @@ Pastikan di **Supabase Dashboard** → **Authentication** → **URL Configuratio
 
 **Redirect URLs** harus berisi:
 ```
-https://hyetal-unfiscally-voncile.ngrok-free.dev/auth/google-callback
+https://glairier-gwyn-rubicund.ngrok-free.dev/auth/google-callback
 ```
 
 **Site URL** (optional):
 ```
-https://hyetal-unfiscally-voncile.ngrok-free.dev
+https://glairier-gwyn-rubicund.ngrok-free.dev
 ```
 
 ---

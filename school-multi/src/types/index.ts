@@ -31,6 +31,41 @@ export interface Tenant {
   subdomain: string
   theme_config: ThemeConfig
   active_modules: string[]
+
+  // Contact Information
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  province?: string
+  postal_code?: string
+  website?: string
+
+  // School Details
+  school_type?: 'SD' | 'SMP' | 'SMA' | 'SMK' | 'TK' | 'Other'
+  accreditation?: 'A' | 'B' | 'C' | 'Not Accredited'
+  npsn?: string // Nomor Pokok Sekolah Nasional
+  established_year?: number
+
+  // Admin/Principal Information
+  principal_name?: string
+  principal_phone?: string
+  principal_email?: string
+
+  // Status & Settings
+  status: 'active' | 'inactive' | 'suspended' | 'trial'
+  subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise'
+  subscription_expires_at?: string
+  max_students?: number
+  max_teachers?: number
+
+  // Metadata
+  created_at?: string
+  updated_at?: string
+  created_by?: string
+  updated_by?: string
+  logo_url?: string
+  notes?: string
 }
 
 export interface ThemeConfig {
@@ -40,6 +75,33 @@ export interface ThemeConfig {
   secondary_color?: string // Database compatibility
   logo?: string
   fontFamily?: string
+}
+
+export interface TenantFormData {
+  name: string
+  subdomain: string
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  province?: string
+  postal_code?: string
+  website?: string
+  school_type?: 'SD' | 'SMP' | 'SMA' | 'SMK' | 'TK' | 'Other'
+  accreditation?: 'A' | 'B' | 'C' | 'Not Accredited'
+  npsn?: string
+  established_year?: number
+  principal_name?: string
+  principal_phone?: string
+  principal_email?: string
+  status: 'active' | 'inactive' | 'suspended' | 'trial'
+  subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise'
+  subscription_expires_at?: string
+  max_students?: number
+  max_teachers?: number
+  active_modules: string[]
+  theme_config?: ThemeConfig
+  notes?: string
 }
 
 // Payment Types

@@ -2,7 +2,7 @@
 
 ## 🔴 Masalah
 
-Saat mengakses aplikasi via Ngrok (`https://hyetal-unfiscally-voncile.ngrok-free.dev`), muncul:
+Saat mengakses aplikasi via Ngrok (`https://glairier-gwyn-rubicund.ngrok-free.dev`), muncul:
 1. Halaman peringatan "You are about to visit..."
 2. Error manifest PWA: `Manifest: Line: 1, column: 1, Syntax error`
 
@@ -12,7 +12,7 @@ Saat mengakses aplikasi via Ngrok (`https://hyetal-unfiscally-voncile.ngrok-free
 
 ### Cara 1: Manual (Paling Mudah) ⭐ RECOMMENDED
 
-1. Buka `https://hyetal-unfiscally-voncile.ngrok-free.dev`
+1. Buka `https://glairier-gwyn-rubicund.ngrok-free.dev`
 2. Klik tombol **"Visit Site"**
 3. Refresh halaman (Ctrl+R)
 4. ✅ Error hilang, PWA bisa diinstall
@@ -25,7 +25,7 @@ Saat mengakses aplikasi via Ngrok (`https://hyetal-unfiscally-voncile.ngrok-free
 
 Gunakan halaman bypass yang sudah saya buat:
 
-1. Buka: `https://hyetal-unfiscally-voncile.ngrok-free.dev/ngrok-bypass.html`
+1. Buka: `https://glairier-gwyn-rubicund.ngrok-free.dev/ngrok-bypass.html`
 2. Halaman akan auto-redirect ke aplikasi
 3. Klik "Visit Site" jika diminta
 4. ✅ Selesai
@@ -61,7 +61,7 @@ Simpan bookmark ini di browser:
 
 **URL**:
 ```javascript
-javascript:(function(){fetch('https://hyetal-unfiscally-voncile.ngrok-free.dev',{headers:{'ngrok-skip-browser-warning':'true'}}).then(()=>window.location.href='https://hyetal-unfiscally-voncile.ngrok-free.dev').catch(()=>window.location.href='https://hyetal-unfiscally-voncile.ngrok-free.dev')})();
+javascript:(function(){fetch('https://glairier-gwyn-rubicund.ngrok-free.dev',{headers:{'ngrok-skip-browser-warning':'true'}}).then(()=>window.location.href='https://glairier-gwyn-rubicund.ngrok-free.dev').catch(()=>window.location.href='https://glairier-gwyn-rubicund.ngrok-free.dev')})();
 ```
 
 **Cara pakai**:

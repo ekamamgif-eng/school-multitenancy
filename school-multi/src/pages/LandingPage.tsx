@@ -1,33 +1,71 @@
 import React from 'react'
 import LoginActions from '../components/auth/LoginActions'
-import { Shield, Zap, Users, BarChart3, GraduationCap, Globe } from 'lucide-react'
+import { ShieldCheckIcon, BoltIcon, UsersIcon, ChartBarIcon, AcademicCapIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
+import { useTenant } from '../contexts/TenantContext'
 
 const LandingPage: React.FC = () => {
+    const { tenant, loading } = useTenant()
+
+    // If loading tenant data, show loading state
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                fontSize: '1.2rem',
+                color: '#666'
+            }}>
+                Loading...
+            </div>
+        )
+    }
+
+    // Determine display branding
+    const schoolName = tenant?.name || 'SchoolPlatform'
+
     return (
-        <div className="landing-page">
+        <div className="landing-page" style={tenant?.theme_config ? {
+            '--primary-color': tenant.theme_config.primaryColor,
+            '--secondary-color': tenant.theme_config.secondaryColor
+        } as React.CSSProperties : {}}>
             <nav className="landing-page__nav">
                 <div className="logo">
-                    <GraduationCap size={32} />
-                    <span>SchoolPlatform</span>
+                    {tenant?.theme_config?.logo ? (
+                        <img
+                            src={tenant.theme_config.logo}
+                            alt={`${schoolName} logo`}
+                            style={{ height: '40px', maxWidth: '150px', objectFit: 'contain' }}
+                        />
+                    ) : (
+                        <AcademicCapIcon className="w-8 h-8" />
+                    )}
+                    <span>{schoolName}</span>
                 </div>
             </nav>
 
             <section className="landing-page__hero">
                 <div className="landing-page__content">
-                    <h1>Modern School Management for the Digital Age</h1>
+                    <h1>
+                        {tenant ? `Welcome to ${tenant.name}` : 'Modern School Management for the Digital Age'}
+                    </h1>
                     <p>
-                        Streamline administration, enhance learning, and connect your entire school community with our all-in-one multi-tenant platform.
+                        {tenant
+                            ? 'Sign in to access your student portal, check grades, and view schedules.'
+                            : 'Streamline administration, enhance learning, and connect your entire school community with our all-in-one multi-tenant platform.'
+                        }
                     </p>
 
                     <div className="landing-page__features-mini">
                         <div className="feature-pill">
-                            <Shield size={18} /> Secure
+                            <ShieldCheckIcon className="w-5 h-5" /> Secure
                         </div>
                         <div className="feature-pill">
-                            <Zap size={18} /> Fast
+                            <BoltIcon className="w-5 h-5" /> Fast
                         </div>
                         <div className="feature-pill">
-                            <Globe size={18} /> Cloud-based
+                            <GlobeAltIcon className="w-5 h-5" /> Cloud-based
                         </div>
                     </div>
                 </div>
@@ -43,7 +81,7 @@ const LandingPage: React.FC = () => {
                 <div className="features-grid">
                     <div className="feature-card">
                         <div className="icon">
-                            <Users size={24} />
+                            <UsersIcon className="w-6 h-6" />
                         </div>
                         <h3>Multi-Tenant Architecture</h3>
                         <p>
@@ -52,7 +90,7 @@ const LandingPage: React.FC = () => {
                     </div>
                     <div className="feature-card">
                         <div className="icon">
-                            <BarChart3 size={24} />
+                            <ChartBarIcon className="w-6 h-6" />
                         </div>
                         <h3>Real-time Analytics</h3>
                         <p>
@@ -61,7 +99,7 @@ const LandingPage: React.FC = () => {
                     </div>
                     <div className="feature-card">
                         <div className="icon">
-                            <Shield size={24} />
+                            <ShieldCheckIcon className="w-6 h-6" />
                         </div>
                         <h3>Enterprise Security</h3>
                         <p>

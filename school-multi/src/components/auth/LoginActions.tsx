@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { LogIn, User, Loader2 } from 'lucide-react'
+import { ArrowRightOnRectangleIcon, UserIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import './LoginActions.scss'
 
 interface LoginActionsProps {
@@ -83,7 +83,7 @@ const LoginActions: React.FC<LoginActionsProps> = ({
                     >
                         {isLoading ? (
                             <>
-                                <Loader2 className="login-actions__icon login-actions__icon--spin" size={18} />
+                                <ArrowPathIcon className="login-actions__icon login-actions__icon--spin w-5 h-5" />
                                 Connecting...
                             </>
                         ) : (
@@ -117,7 +117,7 @@ const LoginActions: React.FC<LoginActionsProps> = ({
                         className="login-actions__btn login-actions__btn--staff"
                         aria-label="Staff Login"
                     >
-                        <User className="login-actions__icon" size={18} />
+                        <UserIcon className="login-actions__icon w-5 h-5" />
                         Staff
                     </button>
                 </div>
@@ -137,7 +137,7 @@ const LoginActions: React.FC<LoginActionsProps> = ({
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="login-actions__icon login-actions__icon--spin" size={20} />
+                            <ArrowPathIcon className="login-actions__icon login-actions__icon--spin w-5 h-5" />
                             <span>Connecting to Google...</span>
                         </>
                     ) : (
@@ -170,7 +170,7 @@ const LoginActions: React.FC<LoginActionsProps> = ({
                     disabled={isLoading}
                     className="login-actions__btn login-actions__btn--staff login-actions__btn--outline"
                 >
-                    <LogIn className="login-actions__icon" size={20} />
+                    <ArrowRightOnRectangleIcon className="login-actions__icon w-5 h-5" />
                     <span>Staff Login</span>
                 </button>
             </div>

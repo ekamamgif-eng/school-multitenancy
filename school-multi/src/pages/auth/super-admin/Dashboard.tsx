@@ -3,6 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { PlatformStats, Tenant } from '../../../types'
 import LoadingSpinner from '../../../components/common/LoadingSpinner'
+import { supabase } from '../../../services/supabase'
 
 const SuperAdminDashboard: React.FC = () => {
   const { user } = useAuth()
@@ -23,40 +24,65 @@ const SuperAdminDashboard: React.FC = () => {
 
   const loadDashboardData = async (): Promise<void> => {
     try {
-      // Mock data - dalam production, fetch dari API
-      const mockStats: PlatformStats = {
-        total_tenants: 5,
-        total_students: 1250,
-        total_payments: 345,
+      setLoading(true)
+
+      // Fetch tenants
+      const { data: tenantsData, error: tenantsError } = await supabase
+        .from('tenants')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (tenantsError) throw tenantsError
+
+      const mappedTenants: Tenant[] = (tenantsData || []).map((t: any) => ({
+        id: t.id,
+        name: t.name,
+        subdomain: t.subdomain,
+        theme_config: t.theme || {},
+        active_modules: t.active_modules || ['academic', 'payment'],
+        status: t.status || 'active',
+        email: t.email,
+        phone: t.phone,
+        address: t.address,
+        city: t.city,
+        province: t.province,
+        postal_code: t.postal_code,
+        website: t.website,
+        school_type: t.school_type,
+        accreditation: t.accreditation,
+        npsn: t.npsn,
+        established_year: t.established_year,
+        principal_name: t.principal_name,
+        principal_phone: t.principal_phone,
+        principal_email: t.principal_email,
+        subscription_plan: t.subscription_plan,
+        subscription_expires_at: t.subscription_expires_at,
+        max_students: t.max_students,
+        max_teachers: t.max_teachers,
+        created_at: t.created_at,
+        updated_at: t.updated_at,
+        logo_url: t.logo_url,
+        notes: t.notes
+      }))
+
+      setTenants(mappedTenants)
+
+      // Fetch stats (can be optimized later)
+      const { count: studentCount } = await supabase
+        .from('students')
+        .select('*', { count: 'exact', head: true })
+
+      const { count: paymentCount } = await supabase
+        .from('payment_submissions')
+        .select('*', { count: 'exact', head: true })
+
+      setStats({
+        total_tenants: mappedTenants.length,
+        total_students: studentCount || 0,
+        total_payments: paymentCount || 0,
         active_modules: ['academic', 'payment', 'meeting', 'library']
-      }
+      })
 
-      const mockTenants: Tenant[] = [
-        {
-          id: '1',
-          name: 'Sekolah Alam Bogor',
-          subdomain: 'alam-bogor',
-          theme_config: { primaryColor: '#10b981' },
-          active_modules: ['academic', 'payment', 'meeting']
-        },
-        {
-          id: '2',
-          name: 'Sekolah Citra Berkat',
-          subdomain: 'citra-berkat',
-          theme_config: { primaryColor: '#3b82f6' },
-          active_modules: ['academic', 'payment']
-        },
-        {
-          id: '3',
-          name: 'Sekolah Global Jaya',
-          subdomain: 'global-jaya',
-          theme_config: { primaryColor: '#ef4444' },
-          active_modules: ['academic', 'payment', 'meeting', 'library']
-        }
-      ]
-
-      setStats(mockStats)
-      setTenants(mockTenants)
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
     } finally {
@@ -120,7 +146,7 @@ const SuperAdminDashboard: React.FC = () => {
           <h2>Managed Schools</h2>
           <button
             className="btn btn-primary"
-            onClick={() => navigate('/tenant/setup')}
+            onClick={() => navigate('/super-admin/schools/add')}
           >
             + Add New School
           </button>
@@ -143,8 +169,18 @@ const SuperAdminDashboard: React.FC = () => {
               </div>
 
               <div className="tenant-actions">
-                <button className="btn btn-outline btn-sm">View Details</button>
-                <button className="btn btn-outline btn-sm">Manage</button>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => navigate(`/super-admin/schools/${tenant.id}`)}
+                >
+                  View Details
+                </button>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => navigate(`/super-admin/schools/${tenant.id}/edit`)}
+                >
+                  Manage
+                </button>
               </div>
             </div>
           ))}
