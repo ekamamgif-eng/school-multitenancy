@@ -1,6 +1,8 @@
+import '../styles/landing-page.scss'
 import React from 'react'
 import LoginActions from '../components/auth/LoginActions'
 import { ShieldCheckIcon, BoltIcon, UsersIcon, ChartBarIcon, AcademicCapIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
+import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 import { useTenant } from '../contexts/TenantContext'
 
 const LandingPage: React.FC = () => {
@@ -9,15 +11,9 @@ const LandingPage: React.FC = () => {
     // If loading tenant data, show loading state
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                fontSize: '1.2rem',
-                color: '#666'
-            }}>
-                Loading...
+            <div className="landing-loader">
+                <div className="landing-loader__spinner"></div>
+                <p>Establishing secure connection...</p>
             </div>
         )
     }
@@ -28,52 +24,75 @@ const LandingPage: React.FC = () => {
     return (
         <div className="landing-page" style={tenant?.theme_config ? {
             '--primary-color': tenant.theme_config.primaryColor,
-            '--secondary-color': tenant.theme_config.secondaryColor
+            '--secondary-color': tenant.theme_config.secondaryColor,
+            '--font-family': tenant.theme_config.fontFamily || 'Inter, sans-serif'
         } as React.CSSProperties : {}}>
+            <div className="landing-page__background"></div>
+
             <nav className="landing-page__nav">
                 <div className="logo">
                     {tenant?.theme_config?.logo ? (
                         <img
                             src={tenant.theme_config.logo}
                             alt={`${schoolName} logo`}
-                            style={{ height: '40px', maxWidth: '150px', objectFit: 'contain' }}
+                            className="logo__image"
                         />
                     ) : (
-                        <AcademicCapIcon className="w-8 h-8" />
+                        <div className="logo__icon-wrapper">
+                            <AcademicCapIcon className="w-8 h-8" />
+                        </div>
                     )}
-                    <span>{schoolName}</span>
+                    <div className="logo__text">
+                        <span>{schoolName}</span>
+                        {tenant?.status === 'active' && (
+                            <div className="logo__badge" title="Verified Educational Institution">
+                                <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
+                                <span>Official Portal</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
             <section className="landing-page__hero">
                 <div className="landing-page__content">
+                    <div className="hero-badge">
+                        <ShieldCheckIcon className="w-4 h-4" />
+                        <span>Secure Student Portal</span>
+                    </div>
                     <h1>
-                        {tenant ? `Welcome to ${tenant.name}` : 'Modern School Management for the Digital Age'}
+                        {tenant ? `Welcome to ${tenant.name}` : 'Modern School Management'}
                     </h1>
-                    <p>
+                    <p className="hero-description">
                         {tenant
-                            ? 'Sign in to access your student portal, check grades, and view schedules.'
+                            ? 'Access your unified educational dashboard. Manage grades, attendance, and resources with confidence and security.'
                             : 'Streamline administration, enhance learning, and connect your entire school community with our all-in-one multi-tenant platform.'
                         }
                     </p>
 
                     <div className="landing-page__features-mini">
                         <div className="feature-pill">
-                            <ShieldCheckIcon className="w-5 h-5" /> Secure
+                            <ShieldCheckIcon className="w-5 h-5" /> Enterprise Security
                         </div>
                         <div className="feature-pill">
-                            <BoltIcon className="w-5 h-5" /> Fast
+                            <BoltIcon className="w-5 h-5" /> High Availability
                         </div>
                         <div className="feature-pill">
-                            <GlobeAltIcon className="w-5 h-5" /> Cloud-based
+                            <GlobeAltIcon className="w-5 h-5" /> Cloud Platform
                         </div>
                     </div>
                 </div>
 
                 <div className="landing-page__login-card">
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to access your dashboard</p>
+                    <div className="card-header">
+                        <h2>Sign In</h2>
+                        <p>Secure access for Students & Staff</p>
+                    </div>
                     <LoginActions />
+                    <div className="card-footer-note">
+                        <ShieldCheckIcon className="w-3 h-3" />
+                        <span>Protected by 256-bit SSL Encryption</span>
+                    </div>
                 </div>
             </section>
 
