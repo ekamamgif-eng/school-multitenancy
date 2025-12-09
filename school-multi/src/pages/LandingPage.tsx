@@ -2,7 +2,6 @@ import '../styles/landing-page.scss'
 import React from 'react'
 import LoginActions from '../components/auth/LoginActions'
 import { ShieldCheckIcon, BoltIcon, UsersIcon, ChartBarIcon, AcademicCapIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
-import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 import { useTenant } from '../contexts/TenantContext'
 
 const LandingPage: React.FC = () => {
@@ -44,12 +43,6 @@ const LandingPage: React.FC = () => {
                     )}
                     <div className="logo__text">
                         <span>{schoolName}</span>
-                        {tenant?.status === 'active' && (
-                            <div className="logo__badge" title="Verified Educational Institution">
-                                <CheckBadgeIcon className="w-4 h-4 text-blue-500" />
-                                <span>Official Portal</span>
-                            </div>
-                        )}
                     </div>
                 </div>
             </nav>
