@@ -307,17 +307,20 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
           }
           foundTenant = proza2Tenant
         } else {
-          // Default Demo School
+          // Default Professional Brand (Proza Academy)
           const mockTenant: Tenant = {
-            id: 'demo',
-            name: 'Sekolah Demo',
-            subdomain: 'demo',
+            id: 'academy',
+            name: 'Proza Academy',
+            subdomain: 'academy',
             theme_config: {
-              primaryColor: '#3b82f6',
-              secondaryColor: '#64748b',
+              primaryColor: '#2563eb', // Royal Blue
+              secondaryColor: '#1e40af', // Darker Blue
+              logo: 'https://img.icons8.com/fluency/96/graduation-cap.png',
+              fontFamily: 'Inter',
+              borderRadius: '12px'
             },
-            active_modules: ['academic', 'payment', 'meeting'],
-            status: 'trial'
+            active_modules: ['academic', 'payment', 'meeting', 'library', 'transport'],
+            status: 'active'
           }
           foundTenant = mockTenant
         }
