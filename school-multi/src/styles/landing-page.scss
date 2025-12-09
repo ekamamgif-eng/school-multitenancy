@@ -132,15 +132,20 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.8);
+            padding: 0.35rem 0.85rem; // Reduced padding
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid #e2e8f0;
             border-radius: 999px;
-            font-size: 0.875rem;
+            font-size: 0.8rem; // Reduced font size
             font-weight: 600;
             color: var(--primary-color);
             margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+            svg {
+                width: 1rem;
+                height: 1rem;
+            }
 
             @media (max-width: 1024px) {
                 margin: 0 auto 2rem;
@@ -148,24 +153,24 @@
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 3.5rem; // Slightly reduced from 4rem
             line-height: 1.1;
             font-weight: 800;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             color: #0f172a;
             letter-spacing: -0.03em;
 
             @media (max-width: 768px) {
-                font-size: 2.75rem;
+                font-size: 2.5rem;
             }
         }
 
         .hero-description {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: #475569;
-            margin-bottom: 3rem;
-            line-height: 1.7;
-            max-width: 650px;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            max-width: 550px;
 
             @media (max-width: 1024px) {
                 margin-left: auto;
@@ -176,7 +181,7 @@
 
     &__features-mini {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
         flex-wrap: wrap;
 
         @media (max-width: 1024px) {
@@ -186,57 +191,65 @@
         .feature-pill {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.75rem 1.25rem;
-            background: rgba(255, 255, 255, 0.6);
+            gap: 0.5rem;
+            padding: 0.6rem 1rem; // Reduced padding
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(4px);
             border-radius: 12px;
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: #334155;
             border: 1px solid rgba(226, 232, 240, 0.8);
             transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
             &:hover {
                 background: white;
                 transform: translateY(-2px);
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             }
 
             svg {
+                width: 1.1rem;
+                height: 1.1rem;
                 color: var(--primary-color);
             }
         }
     }
 
     &__login-card {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95); // More opaque
         backdrop-filter: blur(20px);
-        padding: 3rem;
-        border-radius: 32px;
+        padding: 2.5rem;
+        border-radius: 24px;
         box-shadow:
-            0 25px 50px -12px rgba(0, 0, 0, 0.1),
-            0 0 0 1px rgba(255, 255, 255, 0.8) inset,
-            0 0 0 1px rgba(226, 232, 240, 0.5);
-        max-width: 480px;
+            0 20px 40px -10px rgba(0, 0, 0, 0.08),
+            0 0 0 1px rgba(255, 255, 255, 1) inset,
+            0 0 0 1px rgba(226, 232, 240, 0.6);
+        max-width: 440px; // Slightly narrower
         margin: 0 auto;
         width: 100%;
         position: relative;
         overflow: hidden;
 
+        // Top accent line
         &::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 4px;
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
         .card-header {
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             text-align: center;
+
+            // Remove the blue box appearance if it was coming from inherited styles or global h2/p styling
+            background: transparent !important;
+            padding: 0 !important;
 
             h2 {
                 font-size: 1.75rem;
@@ -247,22 +260,26 @@
 
             p {
                 color: #64748b;
-                font-size: 1rem;
+                font-size: 0.95rem;
+                line-height: 1.4;
             }
         }
 
         .card-footer-note {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.75rem;
             color: #94a3b8;
-            padding-top: 1.5rem;
+            padding-top: 1.25rem;
             border-top: 1px solid #f1f5f9;
 
             svg {
+                width: 14px; // Force small size
+                height: 14px;
+                min-width: 14px;
                 color: #10b981; // Green for security
             }
         }
