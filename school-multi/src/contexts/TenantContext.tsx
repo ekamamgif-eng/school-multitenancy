@@ -29,6 +29,21 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     tenantRef.current = tenant
   }, [tenant])
 
+  /* 
+   * Updates the browser favicon
+   */
+  const updateFavicon = (logoUrl: string | undefined) => {
+    // Find existing favicon link or create new one
+    let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    // Set favicon to tenant logo or fallback to default
+    link.href = logoUrl || '/favicon.png';
+  }
+
   const applyTenantTheme = (tenant: Tenant): void => {
     if (tenant.theme_config) {
       const primaryColor = tenant.theme_config.primaryColor || tenant.theme_config.primary_color
@@ -42,6 +57,9 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
         // Apply to CSS variables (including logo)
         applyThemePalette(palette, tenant.theme_config.logo)
+
+        // Update Favicon
+        updateFavicon(tenant.theme_config.logo)
 
         console.log('✅ Theme palette applied:', palette)
       } else {
@@ -252,9 +270,7 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
       }
 
       // Strategy 3: Mock/Demo Fallback (if no other tenant found)
-      // Only verify against checking a 'public' landing page or similar in future
       if (!foundTenant) {
-        // Semantic fallback for specific known tenants if DB is empty
         const pathSlug = getSlugFromPath()
 
         if (pathSlug === 'proza-bangsa') {
@@ -265,13 +281,31 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
             theme_config: {
               primaryColor: '#0f766e',
               secondaryColor: '#115e59',
-              // Using a placeholder logo that looks professional
-              logo: "https://cdn-icons-png.flaticon.com/512/8074/8074788.png"
+              logo: "https://img.icons8.com/color/96/school.png",
+              borderRadius: '8px',
+              fontFamily: 'Inter'
             },
             active_modules: ['academic', 'students', 'teachers', 'finance', 'library', 'transport'],
             status: 'active'
           }
           foundTenant = prozaTenant
+        } else if (pathSlug === 'proza') {
+          // Fallback for PROZA tenant
+          const proza2Tenant: Tenant = {
+            id: 'proza-mock',
+            name: 'PROZA',
+            subdomain: 'proza',
+            theme_config: {
+              primaryColor: '#7c3aed',
+              secondaryColor: '#5b21b6',
+              logo: "https://img.icons8.com/fluency/96/university.png",
+              borderRadius: '12px',
+              fontFamily: 'Poppins'
+            },
+            active_modules: ['academic', 'students', 'teachers', 'finance', 'library', 'transport'],
+            status: 'active'
+          }
+          foundTenant = proza2Tenant
         } else {
           // Default Demo School
           const mockTenant: Tenant = {

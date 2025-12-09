@@ -1,0 +1,187 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.school-profile {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+
+    &__header {
+        margin-bottom: 2rem;
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: $text-muted;
+        }
+    }
+
+    &__card {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    &__section {
+        margin-bottom: 2.5rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            svg {
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+
+        @include md {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $text-muted;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: white;
+
+            &:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            }
+
+            &:disabled {
+                background: #f9fafb;
+                cursor: not-allowed;
+            }
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        &--color {
+            input[type="color"] {
+                padding: 0;
+                height: 48px;
+                width: 100%;
+                cursor: pointer;
+
+                &::-webkit-color-swatch-wrapper {
+                    padding: 0;
+                }
+
+                &::-webkit-color-swatch {
+                    border: none;
+                    border-radius: 0.5rem;
+                }
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+
+        button {
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+
+            &.btn-secondary {
+                background: white;
+                border: 1px solid var(--border-color);
+                color: $text-muted;
+
+                &:hover {
+                    background: #f9fafb;
+                }
+            }
+
+            &.btn-primary {
+                background: var(--primary-color);
+                color: white;
+                box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+
+                &:hover {
+                    filter: brightness(110%);
+                    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+                }
+
+                &:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+
+    // Preview Section
+    &__preview {
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        border: 1px dashed var(--border-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 120px;
+
+        .preview-button {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            cursor: default;
+        }
+    }
+}

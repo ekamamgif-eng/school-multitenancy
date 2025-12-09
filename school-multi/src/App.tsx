@@ -21,6 +21,7 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 import CompleteProfilePage from './pages/auth/CompleteProfilePage'
 import ParentDashboard from './pages/parent/Dashboard'
+import SchoolProfile from './pages/admin/SchoolProfile'
 import PaymentUploadPage from './pages/parent/PaymentUploadPage'
 import StudentBindingPage from './pages/parent/StudentBindingPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -159,6 +160,10 @@ const App: React.FC = () => {
           {/* Students Management */}
           <Route path="students" element={<StudentsList />} />
           <Route path="students/add" element={<StudentForm />} />
+          <Route path="students/:id" element={<StudentForm />} />
+
+          {/* School Profile Management */}
+          <Route path="profile" element={<SchoolProfile />} />
           <Route path="students/:id" element={<StudentDetail />} />
           <Route path="students/:id/edit" element={<StudentForm />} />
           {/* Placeholder Pages */}

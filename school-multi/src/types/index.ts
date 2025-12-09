@@ -59,6 +59,12 @@ export interface Tenant {
   max_students?: number
   max_teachers?: number
 
+  // Branding
+  primary_color?: string
+  secondary_color?: string
+  border_radius?: string
+  font_family?: string
+
   // Metadata
   created_at?: string
   updated_at?: string
@@ -75,6 +81,7 @@ export interface ThemeConfig {
   secondary_color?: string // Database compatibility
   logo?: string
   fontFamily?: string
+  borderRadius?: string
 }
 
 export interface TenantFormData {

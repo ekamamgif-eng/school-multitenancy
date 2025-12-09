@@ -69,13 +69,13 @@
         // Outline Staff Button
         &--outline {
             background: #fff;
-            color: #4f46e5;
-            border-color: #e5e7eb;
+            color: var(--primary-color);
+            border-color: var(--border-color, #e5e7eb);
 
             &:not(:disabled):hover {
-                border-color: #4f46e5;
-                background: #f8f9ff;
-                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+                border-color: var(--primary-color);
+                background: var(--color-light, #f8f9ff);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             }
         }
 
@@ -97,6 +97,8 @@
 
     &__icon {
         flex-shrink: 0;
+        width: 1.25rem;
+        height: 1.25rem;
 
         &--spin {
             animation: spin 1s linear infinite;
@@ -301,12 +303,12 @@
 
 // Focus states for accessibility
 .login-actions__btn:focus-visible {
-    outline: 2px solid #4f46e5;
+    outline: 2px solid var(--primary-color); // Updated to use variable
     outline-offset: 2px;
 }
 
 .toast__close:focus-visible {
-    outline: 2px solid #4f46e5;
+    outline: 2px solid var(--primary-color); // Updated to use variable
     outline-offset: 2px;
     border-radius: 4px;
 }
