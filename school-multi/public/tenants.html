@@ -265,7 +265,7 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0eXdib3J4cnhmdWxseG15eWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzcyNzEsImV4cCI6MjA3ODk1MzI3MX0.Nov8gmB42asjaaHDPBNuK7proUrqoL6gNVeWJuq5HPw'
 
         const supabase = createClient(supabaseUrl, supabaseKey)
-        const ngrokUrl = 'https://hyetal-unfiscally-voncile.ngrok-free.dev'
+        const productionUrl = 'https://school-multitenancy.netlify.app'
 
         async function loadTenants() {
             try {
@@ -309,8 +309,19 @@
             const primaryColor = tenant.branding?.primary_color || tenant.theme_config?.primaryColor || '#667eea'
             const secondaryColor = tenant.branding?.secondary_color || tenant.theme_config?.secondaryColor || '#764ba2'
 
-            const ngrokLink = `${ngrokUrl}?tenant=${subdomain}`
-            const localLink = `http://localhost:5173?tenant=${subdomain}`
+            const prodLink = `${productionUrl}/${subdomain}` // Using path based routing priority if available, or fallback to query param logic?
+            // Actually TenantContext prefers path slug? Strategy 1.5. 
+            // Let's use path slug for cleaner URLs as they likely want.
+            // BUT wait, netlify doesn't support wildcard subdomains on free tier, 
+            // so we should use path: school-multitenancy.netlify.app/school1
+            
+            // To be safe, let's stick to the query param if path routing isn't fully robust yet, 
+            // BUT TenantContext DOES support path slug. Let's try to encourage path slug.
+            // However, verify if create-vite-app SPA routing handles this.
+            // Yes, standard SPA routing usually sends everything to index.html.
+            
+            const productionLink = `${productionUrl}/${subdomain}`
+            const localLink = `http://localhost:5173/${subdomain}`
 
             return `
                 <div class="tenant-card">
@@ -320,7 +331,7 @@
                         </div>
                         <div class="tenant-info">
                             <h2>${schoolName}</h2>
-                            <div class="tenant-subdomain">@${subdomain}</div>
+                            <div class="tenant-subdomain">/${subdomain}</div>
                         </div>
                     </div>
 
@@ -349,11 +360,11 @@
                     ` : ''}
 
                     <div class="access-buttons">
-                        <a href="${ngrokLink}" class="btn btn-primary" target="_blank">
-                            🌐 Buka via Ngrok
+                        <a href="${productionLink}" class="btn btn-primary" target="_blank">
+                            🚀 Buka App (Production)
                         </a>
                         <a href="${localLink}" class="btn btn-secondary" target="_blank">
-                            💻 Buka Localhost
+                            💻 Buka App (Localhost)
                         </a>
                     </div>
                 </div>

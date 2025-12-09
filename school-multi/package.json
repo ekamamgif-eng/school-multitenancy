@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "tunnel": "ngrok http --domain=hyetal-unfiscally-voncile.ngrok-free.dev 5173",
+    "tunnel": "ngrok http 5173",
     "server:dev": "tsx watch server/api.ts"
   },
   "dependencies": {

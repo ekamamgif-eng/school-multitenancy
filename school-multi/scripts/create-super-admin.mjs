@@ -88,7 +88,7 @@ async function createSuperAdmin() {
         console.log(`   Email:    ${email}`)
         console.log(`   Password: ${password}`)
         console.log('\n💡 You can now login at:')
-        console.log('   https://hyetal-unfiscally-voncile.ngrok-free.dev/super-admin/login')
+        console.log('   [Your Production URL]/super-admin/login')
         console.log('\n⚠️  IMPORTANT: Change the password after first login!')
 
     } catch (err) {
