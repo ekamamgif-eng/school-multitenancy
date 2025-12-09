@@ -8,7 +8,7 @@ const PREDEFINED_FONTS = ['Inter', 'Roboto', 'Poppins', 'Open Sans', 'Lato']
 const PREDEFINED_RADIUS = ['0px', '4px', '8px', '12px', '16px', '24px', '9999px']
 
 const SchoolProfile: React.FC = () => {
-    const { tenant, setTenant, refreshTenant } = useTenant()
+    const { tenant, setTenant } = useTenant()
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null)
 
